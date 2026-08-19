@@ -26,7 +26,9 @@ ignore_eos: true
 input_profile: "512in_256out_var64"
 prompt_file: "data/prompts_512in.txt"
 quality: {task_file: "data/tasks.jsonl", corpus_file: "data/heldout_corpus.txt", max_tokens: 32}
-apex: {probe_set: "default", repeats: 5}
+# APEX model_id for THIS arm: pass 1 must run APEX with a model entry
+# named exactly this, so the importer can pick out its rows.
+apex: {model_id: "qwen3-8b-bf16"}
 notes: "Reference point. All retention/throughput deltas are relative to this."
 
 # --- telemetry sampling (controlled) ---

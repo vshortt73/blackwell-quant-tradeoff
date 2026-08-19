@@ -45,7 +45,7 @@ three dimension curves separate is the result.)_
 - **Percentile latency** (p50/p90/p99), throughput split into request vs
   **output-token**, single vs concurrent regimes never conflated.
 
-## Repro (five commands)
+## Repro
 
 ```bash
 # 1. environment -- requirements.lock is a full pip freeze of the VALIDATED
@@ -67,18 +67,35 @@ VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
 # 4. run the harness against that scheme (repeat per scheme)
 .venv/bin/python harness/run_serving_bench.py configs/fp8_native.yaml
 .venv/bin/python harness/run_quality_eval.py  configs/fp8_native.yaml
-.venv/bin/python harness/run_apex_eval.py     configs/fp8_native.yaml  # after wiring APEX
 
-# 5. build the headline figure + tables
+# 5. APEX runs as a SEPARATE PASS, natively, with its own config. It supports
+#    several models in one run, so one invocation can cover all three arms.
+#    Name each model entry to match apex.model_id in the scheme configs, and
+#    configure an EVALUATOR model -- without one, salience is unscored.
+apex run <your-apex-config>.yaml
+
+# 6. import APEX results into this study, once per scheme
+.venv/bin/python harness/run_apex_eval.py configs/fp8_native.yaml
+
+# 7. build the headline figure + tables
 .venv/bin/python results/analysis.py
 ```
+
+> **Why two passes.** The serving benchmark and APEX cannot share a run. APEX
+> parallelises purely for speed, whereas in the serving benchmark *concurrency
+> is the independent variable*; and correctness scoring is timing-insensitive
+> while throughput measurement is timing-only and needs an exclusive GPU.
+> Running them together would silently corrupt the timing half. This repo
+> therefore never invokes APEX — it only reads what APEX produced
+> (`harness/run_apex_eval.py`, which accepts a results database or an
+> `apex export` JSON file).
 
 ## Layout
 
 ```
 env/          pinned Dockerfile, requirements.lock, gpu_setup.sh (clock lock)
 configs/      one YAML per scheme; controlled vars identical across all
-harness/      serving bench, quality anchors, APEX adapter, grader, fingerprinting
+harness/      serving bench, quality anchors, APEX importer, grader, fingerprinting
 results/raw/  immutable per-run JSON (committed); analysis.py builds plots/tables
 writeup/      the differentiated study skeleton
 METHODOLOGY.md  pre-registration
@@ -87,10 +104,12 @@ LANDMINES.md    sm_120 serving field log
 
 ## What you must wire before running
 
-1. **APEX adapter** — `harness/run_apex_eval.py::run_apex()` raises
-   `NotImplementedError` by design so it cannot emit fabricated quality data.
-   Point it at your installed APEX (import or subprocess) against the vLLM
-   OpenAI endpoint; return one `ApexDimensionResult` per dimension.
+1. **An APEX run with an evaluator.** The importer is built
+   (`harness/run_apex_eval.py`), but pass 1 must produce all three dimensions.
+   Salience probes and 15 of 20 application probes are rubric-scored and need
+   an evaluator model in the APEX config; without one they run but store NULL
+   scores, so salience is lost entirely. The evaluator must **not** be the
+   model under test — a quantized judge degrades in lockstep with its subject.
 2. **Data** — `tasks.jsonl` is the last piece you must supply. One JSON object
    per line; see `data/tasks.example.jsonl`:
 

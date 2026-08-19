@@ -63,25 +63,31 @@ quality:
 
 
 apex:
-  # APEX runs as a subprocess against the live vLLM OpenAI endpoint; its
-  # `openai` backend takes a base_url, so no shim is needed.
-  apex_home: "/opt/apex"
-  apex_bin: "/opt/apex/.venv/bin/apex"
-  probe_select: "all"          # must yield all three dimensions
-  repetitions: 5
-  filler_type: "neutral"
-  seed: 42
-  workers: 4
-  # Positions are the independent variable of the curve; keep IDENTICAL across
-  # every scheme or the curves are not comparable.
-  positions: [0.02, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.98]
-  context_lengths: [4096, 8192]
-  max_context_window: 8192     # must not exceed max_model_len
-  architecture: "transformer-dense"
-  parameters: "8B"
+  # TWO-PASS. Pass 1 runs APEX NATIVELY with its own config -- it already
+  # supports several models in one run and records `quantization` per row, so a
+  # single `apex run` can cover every arm:
+  #     apex run <your-apex-config>.yaml
+  # Pass 2 imports what it produced, once per scheme:
+  #     python harness/run_apex_eval.py configs/awq_4bit.yaml
+  #
+  # The two passes stay separate because their disciplines conflict: APEX
+  # parallelises for speed, whereas concurrency IS the independent variable in
+  # the serving benchmark, and timing measurement demands an exclusive GPU.
+  #
+  # source: APEX results database, or an `apex export <dsn> -o rows.json` file
+  # (the latter works regardless of whether APEX is on SQLite or PostgreSQL).
+  source: "/opt/apex/results.db"
+  # model_id is set PER SCHEME -- one APEX database may hold all three arms.
+  #
+  # NOTE for pass 1: salience probes and 15 of 20 application probes are
+  # rubric-scored and need an EVALUATOR model in the APEX config. Without one
+  # they run but store NULL scores, losing salience entirely. The evaluator must
+  # not be the model under test -- a quantized judge would degrade in lockstep
+  # with its subject.
+  #
   # Curve-existence detection (harness/apex_curve.py). APEX does NOT report
   # curve_exists/curve_strength; they are derived from its per-position scores
-  # by a permutation test on eta-squared. Seeded, so verdicts reproduce.
+  # by a seeded permutation test on eta-squared, so verdicts reproduce.
   n_perm: 10000
   alpha: 0.05
   curve_seed: 20260819
