@@ -18,7 +18,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "harness"))
 from common import load_all  # noqa: E402
-from paired import AlignmentError, format_paired, paired_perplexity  # noqa: E402
+from paired import (  # noqa: E402
+    AlignmentError, format_mcnemar, format_paired, paired_accuracy, paired_perplexity,
+)
 
 PLOTS = Path(__file__).resolve().parent.parent / "plots"
 # Declared ordering of schemes along the throughput axis (edit to taste).
@@ -129,6 +131,32 @@ def print_paired_perplexity(idx: dict) -> None:
         print("\n  " + format_paired(r, SCHEME_ORDER[0], scheme).replace("\n", "\n  "))
 
 
+def print_paired_accuracy(idx: dict) -> None:
+    """Task accuracy vs baseline, paired per item (McNemar).
+
+    Both arms answer the same items, so items they agree on carry no
+    information about a difference. Only the flips do -- and separating
+    regressions from recoveries shows something a single accuracy delta hides:
+    whether a scheme is uniformly worse or just noisier."""
+    base_rows = idx.get(SCHEME_ORDER[0], {}).get("quality", [])
+    if not base_rows:
+        return
+    baseline = base_rows[-1]["metrics"].get("task_accuracy", {})
+    if "per_item" not in baseline:
+        return
+    print("\n=== Paired task accuracy vs " + SCHEME_ORDER[0] + " ===")
+    for scheme in SCHEME_ORDER[1:]:
+        rows = idx.get(scheme, {}).get("quality", [])
+        if not rows:
+            continue
+        try:
+            r = paired_accuracy(baseline, rows[-1]["metrics"].get("task_accuracy", {}))
+        except AlignmentError as e:
+            print(f"\n  {scheme}: CANNOT PAIR -- {e}")
+            continue
+        print("\n  " + format_mcnemar(r, SCHEME_ORDER[0], scheme).replace("\n", "\n  "))
+
+
 def plot_headline(table: list[dict]) -> None:
     try:
         import matplotlib.pyplot as plt
@@ -166,6 +194,7 @@ def main() -> None:
     table = build_table(idx)
     print_table(table)
     print_paired_perplexity(idx)
+    print_paired_accuracy(idx)
     plot_headline(table)
 
 

@@ -6,6 +6,11 @@ __pycache__/
 # what lets a reader rerun the EXACT inputs the numbers came from.
 data/*
 !data/prompts_512in.txt
+!data/tasks.example.jsonl
+
+# Full per-item task text for debugging. results/raw/ is committed; this is not,
+# so task sets can be built from private material without publishing them.
+results/audit/
 models/
 .venv/
 *.log

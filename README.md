@@ -91,14 +91,41 @@ LANDMINES.md    sm_120 serving field log
    `NotImplementedError` by design so it cannot emit fabricated quality data.
    Point it at your installed APEX (import or subprocess) against the vLLM
    OpenAI endpoint; return one `ApexDimensionResult` per dimension.
-2. **Data** — `tasks.jsonl` is the last piece you must supply:
-   `{"prompt":…, "answer":…}` per line, plus optional `"aliases": [...]` and
-   `"whole_response": true`.
+2. **Data** — `tasks.jsonl` is the last piece you must supply. One JSON object
+   per line; see `data/tasks.example.jsonl`:
 
-   > **Privacy note:** `task_accuracy()` records each item's prompt and
-   > response in `per_item`, and `results/raw/` is committed. Whatever goes in
-   > `tasks.jsonl` becomes public. `perplexity()` stores only aggregates, so
-   > the corpus does not.
+   ```jsonl
+   {"prompt": "The capital of France is", "answer": "Paris"}
+   {"prompt": "The largest US city is", "answer": "New York City", "aliases": ["NYC"]}
+   ```
+
+   Optional per item: `"aliases": [...]`, `"whole_response": true`.
+
+   Three constraints shape the content:
+   - **Stems, not questions.** These hit `/v1/completions` with no chat
+     template, so `"What is the capital of France?"` invites the model to
+     continue with *more questions*. `"The capital of France is"` does not.
+   - **The answer must land in the first sentence, within 32 tokens**
+     (`quality.max_tokens`), because the grader scopes to the first segment.
+   - **Calibrate difficulty.** A set the baseline aces cannot detect
+     degradation — every arm scores 1.0. Aim for a baseline of **0.70–0.85**,
+     where the model sits at the edge of its competence and small numerical
+     perturbations actually flip answers. Avoid public benchmark items
+     (GSM8K/MMLU/TriviaQA); they are in the training data.
+
+   Validate before spending GPU time:
+
+   ```bash
+   python harness/check_tasks.py data/tasks.jsonl
+   python harness/check_tasks.py data/tasks.jsonl --probe --config configs/bf16_baseline.yaml
+   ```
+
+   `--probe` reports the difficulty calibration and warns on ceiling/floor.
+
+   > **Privacy:** committed results carry only a hash, verdict and deciding
+   > rule per item — never task text. Full prompts and responses go to
+   > `results/audit/`, which is gitignored. So a task set built from private
+   > material stays private while the rule mix remains publicly auditable.
 
    The other two inputs are generated:
    - `prompt_file` — `harness/make_prompts.py` (deterministic, committed).

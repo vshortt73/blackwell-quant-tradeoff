@@ -36,7 +36,7 @@ try:
 except ImportError as e:  # pragma: no cover
     raise SystemExit("requests required: pip install requests") from e
 
-from common import RunResult, declared_controls, load_config
+from common import RunResult, declared_controls, load_config, write_audit
 
 
 def _completion(base_url: str, model: str, prompt: str, max_tokens: int) -> dict[str, Any]:
@@ -54,7 +54,13 @@ def _completion(base_url: str, model: str, prompt: str, max_tokens: int) -> dict
     return r.json()
 
 
-def task_accuracy(base_url: str, model: str, task_file: str, max_tokens: int) -> dict[str, Any]:
+def task_accuracy(
+    base_url: str,
+    model: str,
+    task_file: str,
+    max_tokens: int,
+    audit: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     """task_file: JSONL of {"prompt":..., "answer":..., "aliases":[...] (opt),
     "whole_response": bool (opt)}.
 
@@ -72,7 +78,7 @@ def task_accuracy(base_url: str, model: str, task_file: str, max_tokens: int) ->
     correct = 0
     rule_counts: dict[str, int] = {}
     per_item: list[dict[str, Any]] = []
-    for it in items:
+    for idx, it in enumerate(items):
         out = _completion(base_url, model, it["prompt"], max_tokens)
         text = out["choices"][0]["text"]
         g = grade(
@@ -83,13 +89,30 @@ def task_accuracy(base_url: str, model: str, task_file: str, max_tokens: int) ->
         )
         correct += int(g.correct)
         rule_counts[g.rule] = rule_counts.get(g.rule, 0) + 1
-        per_item.append({"prompt": it["prompt"], "answer": it["answer"], "response": text, **g.as_dict()})
+        # Committed results carry a HASH, never the task text: results/raw/ is
+        # public and task sets may be built from private material. The hash is
+        # what lets two arms be paired (McNemar) with proof they answered the
+        # same items. Enough survives -- index, hash, verdict, deciding rule --
+        # that the rule mix stays auditable in public.
+        sha = hashlib.sha256(
+            (str(it["prompt"]) + "\x00" + str(it["answer"])).encode("utf-8")
+        ).hexdigest()[:16]
+        per_item.append({"i": idx, "sha": sha, "correct": g.correct, "rule": g.rule})
+        if audit is not None:
+            # Full detail for local debugging only. Written to results/audit/,
+            # which is gitignored.
+            audit.append(
+                {"i": idx, "sha": sha, "prompt": it["prompt"], "answer": it["answer"],
+                 "response": text, **g.as_dict()}
+            )
     return {
         "n": len(items),
         "correct": correct,
         "accuracy": correct / len(items),
         "grader_version": GRADER_VERSION,
         "rule_counts": rule_counts,
+        "task_file": str(task_file),
+        "task_sha": hashlib.sha256(Path(task_file).read_bytes()).hexdigest()[:16],
         "per_item": per_item,
     }
 
@@ -221,10 +244,12 @@ def main() -> None:
     cfg = load_config(args.config)
 
     metrics: dict[str, Any] = {}
+    audit: list[dict[str, Any]] = []
     q = cfg.get("quality", {})
     if q.get("task_file"):
         metrics["task_accuracy"] = task_accuracy(
-            cfg["base_url"], cfg["served_model_name"], q["task_file"], q.get("max_tokens", 32)
+            cfg["base_url"], cfg["served_model_name"], q["task_file"],
+            q.get("max_tokens", 32), audit=audit,
         )
     if q.get("corpus_file"):
         metrics["perplexity"] = perplexity(
@@ -234,7 +259,7 @@ def main() -> None:
     if not metrics:
         raise SystemExit("no quality sources configured (task_file / corpus_file).")
 
-    RunResult(
+    res = RunResult(
         run_kind="quality",
         config_name=cfg["config_name"],
         quant_scheme=cfg["quant_scheme"],
@@ -242,8 +267,12 @@ def main() -> None:
         metrics=metrics,
         notes=cfg.get("notes", ""),
         declared_controls=declared_controls(cfg),
-    ).write()
+    )
+    res.write()
+    ap_ = write_audit(audit, "quality", cfg["config_name"], res.run_id)
     print("[quality] wrote result.")
+    if ap_:
+        print(f"[quality] per-item audit (gitignored) -> {ap_}")
 
 
 if __name__ == "__main__":

@@ -18,6 +18,9 @@ from pathlib import Path
 from typing import Any
 
 RESULTS_RAW = Path(__file__).resolve().parent.parent / "results" / "raw"
+# Full per-item text for local debugging. GITIGNORED: results/raw/ is committed
+# and task sets may be built from private material, so text lives only here.
+RESULTS_AUDIT = Path(__file__).resolve().parent.parent / "results" / "audit"
 
 
 # --------------------------------------------------------------------------- #
@@ -152,6 +155,20 @@ CONTROL_KEYS = (
     "input_profile",
     "checkpoint",
 )
+
+
+def write_audit(records: list[dict[str, Any]], run_kind: str, config_name: str,
+                run_id: str, audit_dir: Path = RESULTS_AUDIT) -> Path | None:
+    """Write full per-item detail alongside a result, keyed by the same run_id.
+
+    Never committed. Its only job is to let you inspect WHY an item was graded
+    the way it was without publishing the task text."""
+    if not records:
+        return None
+    audit_dir.mkdir(parents=True, exist_ok=True)
+    path = audit_dir / f"{run_kind}__{config_name}__{run_id}.json"
+    path.write_text(json.dumps(records, indent=2))
+    return path
 
 
 def load_config(path: str | Path) -> dict[str, Any]:

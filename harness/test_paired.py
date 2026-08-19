@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from paired import AlignmentError, paired_perplexity  # noqa: E402
+from paired import AlignmentError, paired_accuracy, paired_perplexity  # noqa: E402
 
 
 def make(rows, corpus_sha="abc123"):
@@ -118,6 +118,51 @@ def main() -> int:
     print(f"  paired is {unpaired_w / paired_w:.0f}x tighter")
     check("paired CI is tighter than unpaired", paired_w < unpaired_w)
     check("paired resolves the effect", r.significant)
+
+    # --- McNemar paired accuracy ------------------------------------------ #
+    def mk(flags, sha="t1"):
+        return {"task_sha": sha,
+                "per_item": [{"i": i, "sha": f"i{i:03d}", "correct": bool(f), "rule": "x"}
+                             for i, f in enumerate(flags)]}
+
+    base = [1] * 160 + [0] * 40                      # 200 items, 80% correct
+    var = base[:]
+    for i in range(12):
+        var[i] = 0                                    # 12 regressions
+    for i in range(160, 162):
+        var[i] = 1                                    # 2 recoveries
+
+    r = paired_accuracy(mk(base), mk(var))
+    check("McNemar counts regressions", r.b == 12)
+    check("McNemar counts recoveries", r.c == 2)
+    check("McNemar detects the drop", r.significant)
+    check("delta accuracy correct", abs(r.delta_accuracy - (-0.05)) < 1e-9)
+
+    r0 = paired_accuracy(mk(base), mk(base))
+    check("identical arms -> p=1, not significant",
+          r0.p_value == 1.0 and not r0.significant)
+
+    try:
+        paired_accuracy(mk(base), mk(var, sha="other"))
+        check("different task file raises", False)
+    except AlignmentError:
+        check("different task file raises", True)
+
+    try:
+        paired_accuracy(mk(base), mk(base[:100]))
+        check("item-count mismatch raises", False)
+    except AlignmentError:
+        check("item-count mismatch raises", True)
+
+    # sensitivity: the unpaired two-proportion test on the SAME data
+    n = 200
+    p1, p2 = 160 / n, 150 / n
+    se = math.sqrt(p1 * (1 - p1) / n + p2 * (1 - p2) / n)
+    z = abs(p2 - p1) / se
+    print(f"\n  McNemar p = {r.p_value:.4f}  -> {'detects' if r.significant else 'misses'}")
+    print(f"  unpaired two-proportion z = {z:.2f} "
+          f"-> {'detects' if z > 1.96 else 'MISSES'} the same 5% drop")
+    check("McNemar beats the unpaired proportion test", r.significant and z <= 1.96)
 
     print(f"\n{'PASS' if not fails else 'FAIL: ' + ', '.join(fails)}")
     return 1 if fails else 0
