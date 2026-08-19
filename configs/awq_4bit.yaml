@@ -18,6 +18,10 @@ n_requests: 200
 concurrency_levels: [1, 4, 16, 64]
 warmup_requests: 8
 throughput_temperature: 0.0
+# CONTROL: every request decodes exactly max_tokens. Without this each scheme
+# stops at its own EOS and the arms do unequal decode work. See
+# run_serving_bench.py::one_request.
+ignore_eos: true
 input_profile: "512in_256out_var64"
 prompt_file: "data/prompts_512in.txt"
 quality: {task_file: "data/tasks.jsonl", corpus_file: "data/heldout_corpus.txt", max_tokens: 32}

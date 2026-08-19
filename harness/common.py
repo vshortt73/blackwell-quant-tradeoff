@@ -120,7 +120,12 @@ def backend_env() -> dict[str, str | None]:
     sampler/attention backend must be identical across the 4080 baseline and
     the 5090 runs; relying on installed-package names to infer it is not enough
     (vLLM vendors attention; disabling FlashInfer leaves no pip fingerprint).
-    Record the env that actually drove the choice."""
+    Record the env that actually drove the choice.
+
+    LIMITATION: this reads THIS process's environment. The vLLM server is a
+    separate process, so vars exported only on its launch line do not appear
+    here. `declared_controls()` is the authoritative record of what the run was
+    configured with; this function only captures what the harness itself saw."""
     keys = [
         "VLLM_USE_FLASHINFER_SAMPLER",
         "VLLM_ATTENTION_BACKEND",
@@ -129,6 +134,55 @@ def backend_env() -> dict[str, str | None]:
         "CUDA_DEVICE_ORDER",
     ]
     return {k: os.environ.get(k) for k in keys}
+
+
+# Keys whose values must be identical across every scheme in a comparison.
+# Recorded from the config because the server that actually applies them runs
+# in a DIFFERENT process: backend_env() reads this harness's os.environ, which
+# does not see `VLLM_ATTENTION_BACKEND=... vllm serve ...`. Without this the
+# controls would look unset in every result.
+CONTROL_KEYS = (
+    "attention_backend",
+    "use_deep_gemm",
+    "gpu_memory_utilization",
+    "max_model_len",
+    "max_tokens",
+    "ignore_eos",
+    "throughput_temperature",
+    "input_profile",
+    "checkpoint",
+)
+
+
+def load_config(path: str | Path) -> dict[str, Any]:
+    """Load a scheme config MERGED over configs/_shared.yaml.
+
+    _shared.yaml declares itself the single source of truth for the controlled
+    variables, but it is only true if something actually loads it. Without this
+    merge, keys that live solely in _shared.yaml (attention_backend,
+    use_deep_gemm, gpu_memory_utilization, max_model_len) never reach the
+    result record, and the controls would silently go unrecorded.
+
+    Scheme keys win over shared keys, so a scheme can still override -- but the
+    thing that is supposed to be identical across arms now has exactly one
+    place it is written down.
+    """
+    path = Path(path)
+    cfg: dict[str, Any] = {}
+    shared = path.parent / "_shared.yaml"
+    if shared.exists() and shared.resolve() != path.resolve():
+        import yaml
+
+        cfg.update(yaml.safe_load(shared.read_text()) or {})
+    import yaml
+
+    cfg.update(yaml.safe_load(path.read_text()) or {})
+    return cfg
+
+
+def declared_controls(cfg: dict[str, Any]) -> dict[str, Any]:
+    """The controlled variables this run DECLARES, lifted from its config."""
+    return {k: cfg[k] for k in CONTROL_KEYS if k in cfg}
 
 
 def environment_fingerprint() -> dict[str, Any]:
@@ -169,6 +223,9 @@ class RunResult:
     model: str
     metrics: dict[str, Any]
     notes: str = ""
+    # Controls the config declared. The server applies these in another
+    # process, so they cannot be recovered from this process's environment.
+    declared_controls: dict[str, Any] = field(default_factory=dict)
     run_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     fingerprint: dict[str, Any] = field(default_factory=environment_fingerprint)

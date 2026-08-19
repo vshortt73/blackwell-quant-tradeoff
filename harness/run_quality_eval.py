@@ -35,7 +35,7 @@ try:
 except ImportError as e:  # pragma: no cover
     raise SystemExit("requests required: pip install requests") from e
 
-from common import RunResult
+from common import RunResult, declared_controls, load_config
 
 
 def _completion(base_url: str, model: str, prompt: str, max_tokens: int) -> dict[str, Any]:
@@ -183,7 +183,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("config", help="path to a configs/*.yaml file")
     args = ap.parse_args()
-    cfg = yaml.safe_load(Path(args.config).read_text())
+    cfg = load_config(args.config)
 
     metrics: dict[str, Any] = {}
     q = cfg.get("quality", {})
@@ -206,6 +206,7 @@ def main() -> None:
         model=cfg["model"],
         metrics=metrics,
         notes=cfg.get("notes", ""),
+        declared_controls=declared_controls(cfg),
     ).write()
     print("[quality] wrote result.")
 

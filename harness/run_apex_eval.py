@@ -47,7 +47,7 @@ from typing import Any
 
 import yaml
 
-from common import RunResult
+from common import RunResult, declared_controls, load_config
 
 APEX_DIMENSIONS = ("factual_recall", "instruction_following", "salience")
 
@@ -88,7 +88,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("config", help="path to a configs/*.yaml file")
     args = ap.parse_args()
-    cfg = yaml.safe_load(Path(args.config).read_text())
+    cfg = load_config(args.config)
 
     dims = run_apex(
         base_url=cfg["base_url"],
@@ -108,6 +108,7 @@ def main() -> None:
         model=cfg["model"],
         metrics={"dimensions": [asdict(d) for d in dims]},
         notes=cfg.get("notes", ""),
+        declared_controls=declared_controls(cfg),
     ).write()
     print("[apex] wrote result.")
 

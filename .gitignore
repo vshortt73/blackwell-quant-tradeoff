@@ -1,6 +1,11 @@
 __pycache__/
 *.pyc
-data/          # your prompt sets / corpora / task files -- keep out of git if licensing is unclear
+# Inputs are excluded by default (licensing / contamination), with an explicit
+# exception for the synthetic prompt set: it is generated deterministically by
+# harness/make_prompts.py, carries no licensing question, and committing it is
+# what lets a reader rerun the EXACT inputs the numbers came from.
+data/*
+!data/prompts_512in.txt
 models/
 .venv/
 *.log

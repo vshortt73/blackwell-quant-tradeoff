@@ -36,7 +36,7 @@ from typing import Any
 
 import yaml  # pip install pyyaml
 
-from common import RunResult
+from common import RunResult, declared_controls, load_config
 from gpu_sampler import GpuSampler
 
 try:
@@ -62,6 +62,7 @@ async def one_request(
     prompt: str,
     max_tokens: int,
     temperature: float,
+    ignore_eos: bool = True,
 ) -> dict[str, Any]:
     """Fire one streamed completion, return per-request timing."""
     payload = {
@@ -70,6 +71,13 @@ async def one_request(
         "max_tokens": max_tokens,
         "temperature": temperature,  # 0.0 for quality runs; per-config for throughput
         "stream": True,
+        # CONTROL: force every request to decode exactly max_tokens. Without
+        # this each scheme stops at its OWN EOS, and quantization changes what
+        # the model emits -- so the arms would decode different token counts,
+        # with different KV pressure and batch occupancy, and the difference
+        # would be reported as throughput. Equal decode work per arm is the
+        # only way the comparison isolates the quant scheme.
+        "ignore_eos": ignore_eos,
     }
     t0 = time.perf_counter()
     ttft = None
@@ -111,6 +119,7 @@ async def run_concurrency_level(
     warmup: int,
     sample_interval: float = 0.25,
     gpu_index: int = 0,
+    ignore_eos: bool = True,
 ) -> dict[str, Any]:
     url = f"{base_url.rstrip('/')}/v1/completions"
     sem = asyncio.Semaphore(concurrency)
@@ -120,7 +129,9 @@ async def run_concurrency_level(
 
         async def guarded(p: str):
             async with sem:
-                return await one_request(session, url, model, p, max_tokens, temperature)
+                return await one_request(
+                    session, url, model, p, max_tokens, temperature, ignore_eos
+                )
 
         # warmup (discarded) -- deliberately OUTSIDE the power sampler, so
         # CUDA-graph capture and cache-warm transients don't skew load power.
@@ -186,6 +197,7 @@ async def main_async(cfg: dict[str, Any]) -> None:
             max_tokens=cfg["max_tokens"],
             temperature=cfg.get("throughput_temperature", 0.0),
             warmup=cfg.get("warmup_requests", 8),
+            ignore_eos=cfg.get("ignore_eos", True),
             sample_interval=cfg.get("power_sample_interval_s", 0.25),
             gpu_index=cfg.get("gpu_index", 0),
         )
@@ -208,6 +220,7 @@ async def main_async(cfg: dict[str, Any]) -> None:
         model=cfg["model"],
         metrics={"by_concurrency": per_level, "input_profile": cfg.get("input_profile")},
         notes=cfg.get("notes", ""),
+        declared_controls=declared_controls(cfg),
     ).write()
     print("[serving] wrote result.")
 
@@ -216,7 +229,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("config", help="path to a configs/*.yaml file")
     args = ap.parse_args()
-    cfg = yaml.safe_load(Path(args.config).read_text())
+    cfg = load_config(args.config)
     asyncio.run(main_async(cfg))
 
 
