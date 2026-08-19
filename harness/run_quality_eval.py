@@ -26,6 +26,8 @@ import math
 from pathlib import Path
 from typing import Any
 
+from grader import GRADER_VERSION, grade
+
 import yaml
 
 try:
@@ -52,23 +54,43 @@ def _completion(base_url: str, model: str, prompt: str, max_tokens: int) -> dict
 
 
 def task_accuracy(base_url: str, model: str, task_file: str, max_tokens: int) -> dict[str, Any]:
-    """task_file: JSONL of {"prompt": ..., "answer": ...}. Exact-match after a
-    normalization you control. Swap in your grader for structured answers."""
+    """task_file: JSONL of {"prompt":..., "answer":..., "aliases":[...] (opt),
+    "whole_response": bool (opt)}.
+
+    Graded on GOAL SATISFACTION, not string equality -- a response that answers
+    the question and then elaborates has given the user what they asked for.
+    See harness/grader.py for the rules and why they are deterministic.
+
+    Returns the per-rule breakdown alongside the score. Which rule decided each
+    item is what makes an accuracy number auditable rather than a bare float,
+    and a shift in the rule mix across schemes is itself a degradation signal
+    (e.g. answers drifting from first-segment to buried, or into negation)."""
     items = [json.loads(l) for l in Path(task_file).read_text().splitlines() if l.strip()]
     if not items:
         raise SystemExit(f"no task items in {task_file}")
     correct = 0
+    rule_counts: dict[str, int] = {}
+    per_item: list[dict[str, Any]] = []
     for it in items:
         out = _completion(base_url, model, it["prompt"], max_tokens)
-        text = out["choices"][0]["text"].strip()
-        # Replace with your real grader; exact-match normalization shown.
-        if _normalize(text) == _normalize(str(it["answer"])):
-            correct += 1
-    return {"n": len(items), "correct": correct, "accuracy": correct / len(items)}
-
-
-def _normalize(s: str) -> str:
-    return " ".join(s.lower().split())
+        text = out["choices"][0]["text"]
+        g = grade(
+            text,
+            it["answer"],
+            it.get("aliases", ()),
+            whole_response=bool(it.get("whole_response", False)),
+        )
+        correct += int(g.correct)
+        rule_counts[g.rule] = rule_counts.get(g.rule, 0) + 1
+        per_item.append({"prompt": it["prompt"], "answer": it["answer"], "response": text, **g.as_dict()})
+    return {
+        "n": len(items),
+        "correct": correct,
+        "accuracy": correct / len(items),
+        "grader_version": GRADER_VERSION,
+        "rule_counts": rule_counts,
+        "per_item": per_item,
+    }
 
 
 def perplexity(base_url: str, model: str, corpus_file: str) -> dict[str, Any]:
@@ -91,6 +113,10 @@ def perplexity(base_url: str, model: str, corpus_file: str) -> dict[str, Any]:
                 "temperature": 0.0,
                 "prompt_logprobs": 1,  # ask server to score the prompt tokens
                 "echo": True,
+                # REQUIRED for correctness: without the realized token ids we
+                # cannot tell which candidate in each entry is the token that
+                # actually appears in the corpus. See _selected_logprob().
+                "return_token_ids": True,
             },
             timeout=120,
         )
@@ -98,12 +124,19 @@ def perplexity(base_url: str, model: str, corpus_file: str) -> dict[str, Any]:
         data = r.json()
         # vLLM returns prompt_logprobs as a list aligned to prompt tokens;
         # first token has no preceding context -> None. Sum the rest.
-        plps = data["choices"][0].get("prompt_logprobs") or []
-        for entry in plps:
+        choice = data["choices"][0]
+        plps = choice.get("prompt_logprobs") or []
+        token_ids = choice.get("prompt_token_ids")
+        if token_ids is None:
+            raise SystemExit(
+                "server did not return prompt_token_ids -- perplexity cannot be "
+                "computed correctly without them (see _selected_logprob). "
+                "Confirm this vLLM version supports `return_token_ids`."
+            )
+        for i, entry in enumerate(plps):
             if not entry:
                 continue
-            # entry maps token_id -> {logprob, ...}; take the realized token's lp
-            lp = _selected_logprob(entry)
+            lp = _selected_logprob(entry, token_ids[i])
             if lp is not None:
                 total_nll += -lp
                 total_tokens += 1
@@ -117,15 +150,33 @@ def perplexity(base_url: str, model: str, corpus_file: str) -> dict[str, Any]:
     return {"tokens_scored": total_tokens, "mean_nll": mean_nll, "perplexity": math.exp(mean_nll)}
 
 
-def _selected_logprob(entry: dict[str, Any]) -> float | None:
-    """entry is {token_id_str: {"logprob": x, "rank": r, ...}}. The realized
-    token is the one with rank == 1's counterpart -- but the schema varies by
-    vLLM version, so pull the max logprob defensively and adjust to your
-    version if you have the exact realized-token id."""
-    try:
-        return max(v["logprob"] for v in entry.values())
-    except Exception:
-        return None
+def _selected_logprob(entry: dict[str, Any], realized_token_id: int) -> float | None:
+    """Return the logprob of the token that ACTUALLY appears in the corpus at
+    this position.
+
+    `entry` is {token_id_str: {"logprob": x, "rank": r, ...}}. With
+    prompt_logprobs=1 vLLM returns the top-1 token AND, when it differs, the
+    realized token as an extra candidate carrying its true (worse) rank.
+
+    Taking max(logprob) here is WRONG: it always selects the rank-1 token, so
+    the result is the perplexity of the model's own greedy path rather than of
+    the held-out corpus. Measured on this stack that underestimated perplexity
+    by ~3.2x (1.66 vs 5.37). It is worse than a constant offset for this study:
+    the gap between greedy and realized is exactly what quantization perturbs,
+    so the error would contaminate the degradation signal being measured.
+
+    We therefore look the realized token up by id. Verified against
+    vLLM 0.27.1 (see env/requirements.lock)."""
+    v = entry.get(str(realized_token_id))
+    if v is None:
+        # The realized token was absent from the returned candidates. Skipping
+        # would silently bias the mean toward easy tokens, so fail loudly.
+        raise SystemExit(
+            f"realized token id {realized_token_id} missing from prompt_logprobs "
+            f"entry (keys: {sorted(entry)[:5]}...). Raise prompt_logprobs or "
+            "check the response schema for this vLLM version."
+        )
+    return v.get("logprob")
 
 
 def main() -> None:

@@ -1,17 +1,26 @@
-# Pinned, reproducible serving environment. Fill the base image + wheel index
-# to match your working cu128 stack. This is a skeleton, not a validated build.
-FROM nvidia/cuda:12.8.0-devel-ubuntu24.04
+# Pinned, reproducible serving environment for the sm_120 (Blackwell) study.
+#
+# CUDA 13, not the cu128 this skeleton originally assumed: the validated stack
+# is torch 2.13.0+cu130 / vLLM 0.27.1, resolved against driver 580.159.03.
+# See env/requirements.lock for all 203 pins.
+FROM nvidia/cuda:13.0.0-devel-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y python3 python3-pip git && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y python3 python3-pip python3-venv git \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY env/requirements.lock /app/requirements.lock
 
-# Install torch cu128 + vllm from your validated indices, then the rest.
-# RUN pip install --index-url https://download.pytorch.org/whl/cu128 torch==<pin>
-# RUN pip install vllm==<pin> flashinfer==<pin>
-RUN pip install -r requirements.lock
+# requirements.lock is a complete `pip freeze` of the validated environment and
+# already pins torch/vllm/flashinfer/transformers exactly. Nothing else to add:
+# a second install line would risk resolving a different torch than the one the
+# numbers were produced on.
+RUN pip install --break-system-packages -r requirements.lock
 
 COPY . /app
+
+# Attention backend is a controlled variable -- pin it, do not let vLLM choose.
+ENV VLLM_ATTENTION_BACKEND=FLASH_ATTN
+
 CMD ["bash"]

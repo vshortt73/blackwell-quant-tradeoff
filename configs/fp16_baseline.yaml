@@ -1,9 +1,13 @@
 config_name: "fp16_baseline"
 quant_scheme: "FP16"
-# launch: vllm serve <model> --dtype float16 \
-#   --gpu-memory-utilization 0.85 --max-model-len 8192 \
-#   --port 8000 --served-model-name model-under-test
-model: "Qwen3.6-35B-A3B"
+# launch:
+#   VLLM_ATTENTION_BACKEND=FLASH_ATTN \
+#   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B \
+#     --gpu-memory-utilization 0.85 --max-model-len 8192 \
+#     --port 8000 --served-model-name model-under-test
+# Measured on this box: weights 15.26 GiB, leaving ~10.8 GiB of KV cache.
+model: "Qwen3-8B"
+checkpoint: "/mnt/nvme4tb/llm_models/qwen/Qwen3-8B"
 base_url: "http://127.0.0.1:8000"
 served_model_name: "model-under-test"
 max_tokens: 256

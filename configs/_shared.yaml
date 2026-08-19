@@ -4,12 +4,22 @@
 # scheme, because the only thing allowed to vary within a comparison is the
 # quantization scheme.
 
-model: "Qwen3.6-35B-A3B"          # one model FAMILY for the core result
+# ONE model, three checkpoints. `model` is the identity held constant across
+# every arm; `checkpoint` is the per-scheme weight directory (set in each
+# scheme file). Qwen3-8B is dense 8B: all three arms fit one 32 GiB 5090 with
+# KV headroom, which a 30B+ MoE does not (FP16 alone needs ~65 GiB).
+model: "Qwen3-8B"
 base_url: "http://127.0.0.1:8000"
 served_model_name: "model-under-test"
 
 # --- controlled: identical across all schemes ---
 max_model_len: 8192
+# Attention backend is a CONTROLLED variable, so PIN it rather than letting
+# vLLM auto-select. On this stack vLLM chose FLASH_ATTN from
+# [FLASH_ATTN, FLASHINFER, TRITON_ATTN, FLEX_ATTENTION]; a different arm could
+# silently get a different backend and break the comparison.
+# Export before launching:  VLLM_ATTENTION_BACKEND=FLASH_ATTN
+attention_backend: "FLASH_ATTN"
 gpu_memory_utilization: 0.85
 max_tokens: 256
 n_requests: 200

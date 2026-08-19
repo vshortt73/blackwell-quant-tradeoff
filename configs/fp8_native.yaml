@@ -3,10 +3,14 @@ quant_scheme: "FP8-native"
 # Blackwell has native FP8 tensor cores; on LINUX these are exposed (the ugly
 # emulated fallback was a WSL2/dxgkrnl limitation). vLLM v0.17.0+ ships a
 # dedicated SM120 FP8 GEMM path.
-# launch: vllm serve <model> --quantization fp8 \
-#   --gpu-memory-utilization 0.85 --max-model-len 8192 \
-#   --port 8000 --served-model-name model-under-test
-model: "Qwen3.6-35B-A3B"
+# launch (quantization is auto-detected from the checkpoint config):
+#   VLLM_ATTENTION_BACKEND=FLASH_ATTN \
+#   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B-FP8 \
+#     --gpu-memory-utilization 0.85 --max-model-len 8192 \
+#     --port 8000 --served-model-name model-under-test
+# Checkpoint declares: fmt=e4m3, activation_scheme=dynamic, block 128x128.
+model: "Qwen3-8B"
+checkpoint: "/mnt/nvme4tb/llm_models/qwen/Qwen3-8B-FP8"
 base_url: "http://127.0.0.1:8000"
 served_model_name: "model-under-test"
 max_tokens: 256
