@@ -1,0 +1,50 @@
+{"prompt": "In CUDA, a group of 32 threads that execute in lockstep is called a", "answer": "warp"}
+{"prompt": "The rotary positional encoding used in LLaMA and Qwen is abbreviated", "answer": "RoPE", "aliases": ["rotary position embedding"]}
+{"prompt": "The NVIDIA GPU architecture used in the RTX 50 series is called", "answer": "Blackwell"}
+{"prompt": "The compute capability of the NVIDIA RTX 5090 is sm_", "answer": "120"}
+{"prompt": "The gated activation function used in the feed-forward layers of LLaMA and Qwen is", "answer": "SwiGLU"}
+{"prompt": "The most electronegative chemical element is", "answer": "fluorine"}
+{"prompt": "In the Standard Model, the force carrier of the strong interaction is the", "answer": "gluon"}
+{"prompt": "Avogadro's number is approximately 6.022 times ten to the power of", "answer": "23"}
+{"prompt": "The SI unit of magnetic flux density is the", "answer": "tesla"}
+{"prompt": "The chemical element with atomic number 74 is", "answer": "tungsten", "aliases": ["wolfram"]}
+{"prompt": "The organelle that produces most of a cell's ATP is the", "answer": "mitochondrion", "aliases": ["mitochondria"]}
+{"prompt": "The bacterium responsible for Lyme disease is Borrelia", "answer": "burgdorferi"}
+{"prompt": "The pancreatic hormone that lowers blood glucose is", "answer": "insulin"}
+{"prompt": "The cranial nerve that carries visual information to the brain is the", "answer": "optic nerve", "aliases": ["optic"]}
+{"prompt": "During DNA replication, the enzyme that unwinds the double helix is", "answer": "helicase"}
+{"prompt": "The Byzantine emperor who codified Roman law in the sixth century was", "answer": "Justinian"}
+{"prompt": "The Treaty of Tordesillas divided newly discovered territories between Spain and", "answer": "Portugal"}
+{"prompt": "The First World War began in the year", "answer": "1914"}
+{"prompt": "The peace treaty that formally ended the First World War was signed at", "answer": "Versailles"}
+{"prompt": "The Roman emperor who issued the Edict of Milan legalising Christianity was", "answer": "Constantine"}
+{"prompt": "The lowest point on the ocean floor, in the Mariana Trench, is called Challenger", "answer": "Deep"}
+{"prompt": "The capital city of Australia is", "answer": "Canberra"}
+{"prompt": "The capital city of Bhutan is", "answer": "Thimphu"}
+{"prompt": "The narrow strait separating Spain from Morocco is the Strait of", "answer": "Gibraltar"}
+{"prompt": "The desert covering much of southern Mongolia and northern China is the", "answer": "Gobi"}
+{"prompt": "The Russian author of Crime and Punishment was Fyodor", "answer": "Dostoevsky", "aliases": ["Dostoyevsky"]}
+{"prompt": "Rosencrantz and Guildenstern are minor characters in the Shakespeare play", "answer": "Hamlet"}
+{"prompt": "The modernist poem The Waste Land was written by T. S.", "answer": "Eliot"}
+{"prompt": "The Homeric epic that follows Odysseus on his journey home is the", "answer": "Odyssey"}
+{"prompt": "One Hundred Years of Solitude was written by Gabriel Garcia", "answer": "Marquez", "aliases": ["Márquez"]}
+{"prompt": "The smallest positive integer expressible as a sum of two positive cubes in two different ways is", "answer": "1729"}
+{"prompt": "The derivative of sin(x) with respect to x is", "answer": "cos(x)", "aliases": ["cosine of x", "cos x"]}
+{"prompt": "The interior angles of any triangle sum to how many degrees:", "answer": "180"}
+{"prompt": "The ratio of a circle's circumference to its diameter is denoted by the Greek letter", "answer": "pi", "aliases": ["π"]}
+{"prompt": "A complete graph on 5 vertices has this many edges:", "answer": "10"}
+{"prompt": "The FAA airworthiness standards for normal category airplanes are in 14 CFR Part", "answer": "23"}
+{"prompt": "Below 10,000 feet MSL in US airspace the maximum indicated airspeed in knots is", "answer": "250"}
+{"prompt": "A pilot losing radio communication squawks the transponder code", "answer": "7600"}
+{"prompt": "The two-wire serial bus that uses SDA and SCL lines is called", "answer": "I2C", "aliases": ["I²C", "IIC", "TWI"]}
+{"prompt": "LoRa radios encode data using chirp spread", "answer": "spectrum"}
+{"prompt": "Domain name resolution normally uses UDP and TCP port", "answer": "53"}
+{"prompt": "The idempotent HTTP method that replaces a resource entirely is", "answer": "PUT"}
+{"prompt": "The HTTP status code indicating the request conflicts with the current state of the server is", "answer": "409"}
+{"prompt": "Encrypted web traffic over TLS uses the default TCP port", "answer": "443"}
+{"prompt": "The comparison sort that repeatedly extracts the maximum from a binary heap is called", "answer": "heapsort", "aliases": ["heap sort"]}
+{"prompt": "The Supreme Court case that established judicial review was Marbury v.", "answer": "Madison"}
+{"prompt": "In criminal law, a defendant is presumed innocent until proven", "answer": "guilty"}
+{"prompt": "The measure of income inequality that ranges from 0 to 1 is the Gini", "answer": "coefficient", "aliases": ["index"]}
+{"prompt": "High inflation combined with stagnant economic growth is called", "answer": "stagflation"}
+{"prompt": "Slavery in the United States was abolished by constitutional amendment number", "answer": "13", "aliases": ["thirteenth"]}

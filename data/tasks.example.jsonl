@@ -1,6 +1,0 @@
-{"prompt": "The capital of France is", "answer": "Paris"}
-{"prompt": "2 + 2 =", "answer": "4"}
-{"prompt": "The largest city in the United States by population is", "answer": "New York City", "aliases": ["NYC", "New York"]}
-{"prompt": "The chemical symbol for gold is", "answer": "Au"}
-{"prompt": "In the SI system, the unit of electrical resistance is the", "answer": "ohm"}
-{"prompt": "The speed of light in vacuum, to three significant figures, is 3.00 x 10^8", "answer": "m/s", "aliases": ["meters per second", "metres per second"]}

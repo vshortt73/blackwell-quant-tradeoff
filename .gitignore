@@ -6,7 +6,11 @@ __pycache__/
 # what lets a reader rerun the EXACT inputs the numbers came from.
 data/*
 !data/prompts_512in.txt
-!data/tasks.example.jsonl
+# tasks.jsonl is committed: it is general-knowledge items authored for this
+# study, not private material. The held-out corpus is NOT committed -- it is
+# built from unpublished prose and publishing it would destroy the property
+# that makes it a valid perplexity anchor.
+!data/tasks.jsonl
 
 # Full per-item task text for debugging. results/raw/ is committed; this is not,
 # so task sets can be built from private material without publishing them.

@@ -125,8 +125,9 @@ LANDMINES.md    sm_120 serving field log
      alone. Getting this wrong is not a small error: programmatic scores
      measured 0.332 against 0.983 for exact-match, because APEX's scorers see
      `<think>` text instead of the answer. See `LANDMINES.md`.
-2. **Data** — `tasks.jsonl` is the last piece you must supply. One JSON object
-   per line; see `data/tasks.example.jsonl`:
+2. **Data** — `data/tasks.jsonl` ships with the repo: 50 general-knowledge
+   items authored for this study, stratified across 10 domains. One JSON object
+   per line:
 
    ```jsonl
    {"prompt": "The capital of France is", "answer": "Paris"}
@@ -156,10 +157,17 @@ LANDMINES.md    sm_120 serving field log
 
    `--probe` reports the difficulty calibration and warns on ceiling/floor.
 
-   > **Privacy:** committed results carry only a hash, verdict and deciding
-   > rule per item — never task text. Full prompts and responses go to
-   > `results/audit/`, which is gitignored. So a task set built from private
-   > material stays private while the rule mix remains publicly auditable.
+   > **Privacy mechanism:** committed results carry only a hash, verdict and
+   > deciding rule per item — never task text. Full prompts and responses go to
+   > `results/audit/`, which is gitignored. *This* task set is general knowledge
+   > and safe to publish, but the mechanism means you can swap in private
+   > domain items without leaking them.
+
+   > **Contamination, declared:** publishing a task set eventually poisons it —
+   > future models may train on this file, exactly as happened to GSM8K and
+   > MMLU. That is the accepted cost of letting a reader rerun the identical
+   > items. Anyone reusing this harness years from now should re-author rather
+   > than inherit these 50.
 
    The other two inputs are generated:
    - `prompt_file` — `harness/make_prompts.py` (deterministic, committed).
