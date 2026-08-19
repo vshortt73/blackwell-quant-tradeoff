@@ -91,10 +91,35 @@ LANDMINES.md    sm_120 serving field log
    `NotImplementedError` by design so it cannot emit fabricated quality data.
    Point it at your installed APEX (import or subprocess) against the vLLM
    OpenAI endpoint; return one `ApexDimensionResult` per dimension.
-2. **Data** — a controlled `prompt_file` (fixed, declared input-length
-   distribution), a `tasks.jsonl` you own, and a held-out `corpus_file`.
-   `tasks.jsonl` is `{"prompt":…, "answer":…}` per line, plus optional
-   `"aliases": [...]` and `"whole_response": true`.
+2. **Data** — `tasks.jsonl` is the last piece you must supply:
+   `{"prompt":…, "answer":…}` per line, plus optional `"aliases": [...]` and
+   `"whole_response": true`.
+
+   > **Privacy note:** `task_accuracy()` records each item's prompt and
+   > response in `per_item`, and `results/raw/` is committed. Whatever goes in
+   > `tasks.jsonl` becomes public. `perplexity()` stores only aggregates, so
+   > the corpus does not.
+
+   The other two inputs are generated:
+   - `prompt_file` — `harness/make_prompts.py` (deterministic, committed).
+   - `corpus_file` — `harness/build_corpus.py`, which turns private
+     unpublished prose into one-passage-per-line text. It strips markdown
+     structure (format predictability is not language modelling), excludes
+     model-written and third-party documents by filename, drops passages
+     matching credential/PII patterns, deduplicates, and reports statistics
+     only — never file contents. Output stays gitignored.
+
+     ```bash
+     python harness/build_corpus.py --root /path/to/private/docs \
+         --out data/heldout_corpus.txt
+     ```
+
+     "Held-out" is the whole ballgame: public text is in the model's training
+     data, and memorised text does not merely read low, it may degrade
+     differently under quantization and so corrupt the delta itself. As a
+     sanity check, genuinely unseen prose scored **38.6** perplexity here
+     against **11.5** for formulaic text — the model is predicting, not
+     recalling.
 
 Done (kept here as a record of what was verified rather than assumed):
 
