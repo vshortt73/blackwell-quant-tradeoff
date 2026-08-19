@@ -125,6 +125,22 @@ LANDMINES.md    sm_120 serving field log
      alone. Getting this wrong is not a small error: programmatic scores
      measured 0.332 against 0.983 for exact-match, because APEX's scorers see
      `<think>` text instead of the answer. See `LANDMINES.md`.
+
+   - **A calibrated probe set.** Probe difficulty is relative to the model
+     under test, and a dimension made mostly of probes that every model aces
+     (or that move no model) cannot produce a curve however good the detector
+     is. Run APEX over the whole probe set at two positions first, then:
+
+     ```bash
+     python harness/check_probes.py results/apex/probecal.db \
+         --model qwen3-8b-bf16 --emit-select
+     ```
+
+     On Qwen3-8B this found **28 of 60 seed probes usable** — 14 factual
+     probes at ceiling, 14 salience probes at floor. It emits a
+     `probes.select` list so the sweep spends its time only on probes that can
+     move. Skipping this step is how you spend hours characterising probes
+     that cannot register a result.
 2. **Data** — `data/tasks.jsonl` ships with the repo: 50 general-knowledge
    items authored for this study, stratified across 10 domains. One JSON object
    per line:
