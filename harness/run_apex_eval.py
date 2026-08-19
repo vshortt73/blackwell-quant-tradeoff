@@ -18,7 +18,7 @@ THE central hypothesis of this study lives here: quantization is expected to
 degrade the three dimensions NON-uniformly. A scheme may preserve
 factual_recall while the instruction_following curve collapses into noise a
 full precision-step earlier -- or vice versa. Reporting per-dimension
-curve_exists / curve_strength across FP16 -> FP8 -> AWQ-4bit is the
+curve_exists / curve_strength across BF16 -> FP8 -> AWQ-4bit is the
 differentiated contribution; no vLLM benchmark publishes a per-capability
 degradation profile.
 

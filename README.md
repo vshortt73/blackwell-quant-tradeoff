@@ -2,7 +2,7 @@
 
 **Per-capability quantization degradation on NVIDIA Blackwell (RTX 5090, sm_120).**
 
-As quantization drops FP16 → FP8-native → AWQ-4bit, throughput rises. This study
+As quantization drops BF16 → FP8-native → AWQ-4bit, throughput rises. This study
 measures whether model quality degrades *uniformly* across capabilities or
 *differentially* — using [APEX](https://github.com/vshortt73/apex)'s three
 independent dimensions (factual recall, instruction following, salience) as the
@@ -19,7 +19,7 @@ what nothing in the vLLM-benchmark literature currently reports.
 > `results/analysis.py`.
 >
 > **Model under test:** Qwen3-8B (dense 8B), three official checkpoints —
-> FP16 / FP8 (e4m3) / AWQ-4bit. Sized so all three arms fit one 32 GiB card with
+> BF16 / FP8 (e4m3) / AWQ-4bit. Sized so all three arms fit one 32 GiB card with
 > KV headroom; see `configs/`.
 
 ## Headline
@@ -135,7 +135,7 @@ Done (kept here as a record of what was verified rather than assumed):
    Replaced by `harness/grader.py`: deterministic goal-satisfaction grading —
    first-segment scoping, word-boundary matching, numeric tolerance, aliases,
    negation guard. Deterministic by design so grader variance cannot
-   contaminate the FP16→FP8→AWQ delta. Tests: `harness/test_grader.py`.
+   contaminate the BF16→FP8→AWQ delta. Tests: `harness/test_grader.py`.
 
 ## Sequence (per the plan)
 

@@ -9,7 +9,7 @@ is the cheapest way to earn it back.
 ## Question
 
 On NVIDIA Blackwell (RTX 5090, sm_120), as quantization precision drops
-FP16 → FP8-native → AWQ-4bit, throughput rises. **Does model quality degrade
+BF16 → FP8-native → AWQ-4bit, throughput rises. **Does model quality degrade
 uniformly across capabilities, or differentially?** Specifically, do the three
 APEX dimensions — factual recall, instruction following, and salience — cross
 from an exploitable, structured curve into noise at the *same* precision, or at
@@ -23,7 +23,9 @@ precision at which `curve_exists` flips to false.
 
 ## Design
 
-- **Independent variable:** quantization scheme (FP16, FP8-native, AWQ-4bit).
+- **Independent variable:** quantization scheme (BF16, FP8-native, AWQ-4bit).
+  The full-precision arm is **bfloat16** — the checkpoint's native dtype.
+  Forcing float16 on a bf16-trained model would degrade the baseline itself.
 - **Held constant across every run:** model family (one — Qwen), GPU, locked SM
   clock, fixed power limit, `--gpu-memory-utilization`, `--max-model-len`,
   KV-cache space, input-length distribution, decoding (greedy for quality),
@@ -44,7 +46,7 @@ precision at which `curve_exists` flips to false.
 
 1. **Locked clocks + fixed power limit** (`env/gpu_setup.sh`) so thermal
    throttling cannot inject variance mid-sweep.
-2. **Same base weights** for every scheme — FP8 and AWQ derived from the FP16
+2. **Same base weights** for every scheme — FP8 and AWQ derived from the BF16
    checkpoint, not different checkpoints.
 3. **Only the quant scheme varies** within a comparison; every other server
    flag is identical and recorded.
@@ -99,6 +101,6 @@ precision at which `curve_exists` flips to false.
 - **Curves move together** (H0 not rejected): still a publishable negative —
   "on Blackwell/Qwen, quantization degrades these three capabilities in
   lockstep down to X-bit" — provided the controls above hold.
-- **No curve exists even at FP16** for a dimension: a property of the
+- **No curve exists even at BF16** for a dimension: a property of the
   model/probe set, not the quantization; note it and exclude that dimension
   from the degradation claim.

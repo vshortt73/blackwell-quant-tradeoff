@@ -97,7 +97,7 @@ flashinfer 0.6.16.post3        transformers 5.15.0
   selection default.
 - CONTROL NOTE: set `VLLM_USE_DEEP_GEMM=0` for **every** arm, not just FP8, so
   the environment is identical across the comparison. It only affects FP8 GEMM
-  selection, so it is a no-op for FP16 and AWQ.
+  selection, so it is a no-op for BF16 and AWQ.
 
 ### RESOLVED: FP8 native path confirmed (not emulated)
 - `Selected CutlassFp8BlockScaledMMKernel for Fp8LinearMethod` -- CUTLASS FP8

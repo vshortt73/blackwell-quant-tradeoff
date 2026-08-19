@@ -7,7 +7,7 @@
 # ONE model, three checkpoints. `model` is the identity held constant across
 # every arm; `checkpoint` is the per-scheme weight directory (set in each
 # scheme file). Qwen3-8B is dense 8B: all three arms fit one 32 GiB 5090 with
-# KV headroom, which a 30B+ MoE does not (FP16 alone needs ~65 GiB).
+# KV headroom, which a 30B+ MoE does not (BF16 alone needs ~65 GiB).
 model: "Qwen3-8B"
 base_url: "http://127.0.0.1:8000"
 served_model_name: "model-under-test"
@@ -23,7 +23,7 @@ attention_backend: "FLASH_ATTN"
 # DeepGEMM must be OFF: its scale-factor layout transform crashes on sm_120
 # when loading block-scaled FP8 weights ("Unknown SF transformation"). With it
 # disabled vLLM selects the native CutlassFp8BlockScaledMMKernel. Set for EVERY
-# arm so the environment is identical -- it is a no-op for FP16 and AWQ.
+# arm so the environment is identical -- it is a no-op for BF16 and AWQ.
 # Export before launching:  VLLM_USE_DEEP_GEMM=0
 use_deep_gemm: false
 gpu_memory_utilization: 0.85

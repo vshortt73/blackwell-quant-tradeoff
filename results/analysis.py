@@ -2,7 +2,7 @@
 Turn results/raw/*.json into the headline figure + summary tables.
 
 Headline: throughput gain (x) vs per-dimension retention (y), one series per
-APEX dimension, points ordered FP16 -> FP8 -> AWQ-4bit. Where the three curves
+APEX dimension, points ordered BF16 -> FP8 -> AWQ-4bit. Where the three curves
 separate is the finding.
 
 Run after you have serving + apex (+ quality) results for each scheme:
@@ -22,7 +22,7 @@ from paired import AlignmentError, format_paired, paired_perplexity  # noqa: E40
 
 PLOTS = Path(__file__).resolve().parent.parent / "plots"
 # Declared ordering of schemes along the throughput axis (edit to taste).
-SCHEME_ORDER = ["FP16", "FP8-native", "AWQ-4bit"]
+SCHEME_ORDER = ["BF16", "FP8-native", "AWQ-4bit"]
 
 
 def index_results(rows: list[dict]) -> dict:
@@ -99,7 +99,7 @@ def print_table(table: list[dict]) -> None:
 
 
 def print_paired_perplexity(idx: dict) -> None:
-    """Perplexity deltas vs the FP16 baseline, paired per passage.
+    """Perplexity deltas vs the BF16 baseline, paired per passage.
 
     Two aggregate perplexity scalars cannot tell you whether a difference is
     real. Every arm scores the identical corpus, so pairing cancels passage
@@ -139,7 +139,7 @@ def plot_headline(table: list[dict]) -> None:
         return
     PLOTS.mkdir(parents=True, exist_ok=True)
 
-    # x = normalized throughput gain vs FP16 baseline
+    # x = normalized throughput gain vs BF16 baseline
     base = table[0]["peak_output_tps"] or 1.0
     x = [(row["peak_output_tps"] or 0) / base for row in table]
     labels = [row["scheme"] for row in table]
@@ -150,7 +150,7 @@ def plot_headline(table: list[dict]) -> None:
         ax.plot(x, y, marker="o", label=dim)
     for xi, lab in zip(x, labels):
         ax.annotate(lab, (xi, ax.get_ylim()[0]), fontsize=8, ha="center", va="bottom")
-    ax.set_xlabel("Output-token throughput  (× FP16 baseline)")
+    ax.set_xlabel("Output-token throughput  (× BF16 baseline)")
     ax.set_ylabel("APEX curve strength  (retention)")
     ax.set_title("Blackwell quantization: throughput vs per-dimension retention")
     ax.legend()

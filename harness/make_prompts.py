@@ -18,7 +18,7 @@ Determinism: all randomness comes from random.Random(seed). Same seed + same
 tokenizer -> byte-identical file, on any machine.
 
 Usage:
-    python harness/make_prompts.py --config configs/fp16_baseline.yaml
+    python harness/make_prompts.py --config configs/bf16_baseline.yaml
     python harness/make_prompts.py --out data/prompts_512in.txt \\
         --tokenizer /path/to/Qwen3-8B --n 200 --target 512 --var 64 --seed 20260819
 """
@@ -111,7 +111,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", help="read tokenizer/target/n from a configs/*.yaml")
     ap.add_argument("--out", default=None)
-    ap.add_argument("--tokenizer", default=None, help="path to the FP16 checkpoint")
+    ap.add_argument("--tokenizer", default=None, help="path to the BF16 checkpoint")
     ap.add_argument("--n", type=int, default=None)
     ap.add_argument("--target", type=int, default=512)
     ap.add_argument("--var", type=int, default=64, help="uniform +/- this many tokens")

@@ -26,7 +26,7 @@ input_profile: "512in_256out_var64"
 prompt_file: "data/prompts_512in.txt"
 quality: {task_file: "data/tasks.jsonl", corpus_file: "data/heldout_corpus.txt", max_tokens: 32}
 apex: {probe_set: "default", repeats: 5}
-notes: "Quantize from the SAME base weights as FP16. Confirm native (not emulated) FP8 path in server logs."
+notes: "Quantize from the SAME base weights as BF16. Confirm native (not emulated) FP8 path in server logs."
 
 # --- telemetry sampling (controlled) ---
 power_sample_interval_s: 0.25   # background nvidia-smi poll during measured interval

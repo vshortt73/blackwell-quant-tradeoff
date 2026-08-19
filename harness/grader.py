@@ -8,7 +8,7 @@ for. Letter-for-letter comparison scores that 0, which makes the anchor read
 
 Why not an LLM judge: this grader sits inside the measurement chain of a
 DEGRADATION study. What matters is not that it is absolutely right but that it
-is *identically* right across FP16 / FP8 / AWQ. A stable bias cancels in the
+is *identically* right across BF16 / FP8 / AWQ. A stable bias cancels in the
 delta; variance does not. Every rule here is a pure function -- same input,
 same verdict, every run, on every machine.
 

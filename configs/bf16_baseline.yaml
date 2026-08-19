@@ -1,5 +1,9 @@
-config_name: "fp16_baseline"
-quant_scheme: "FP16"
+config_name: "bf16_baseline"
+# BF16, not FP16: Qwen3-8B ships bfloat16 weights and vLLM loads them
+# natively (server log shows dtype=torch.bfloat16). Forcing --dtype float16
+# would narrow exponent range on a model never trained for it, degrading the
+# very reference point every other arm is measured against.
+quant_scheme: "BF16"
 # launch:
 #   VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
 #   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B \
