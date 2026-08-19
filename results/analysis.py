@@ -18,6 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "harness"))
 from common import load_all  # noqa: E402
+from paired import AlignmentError, format_paired, paired_perplexity  # noqa: E402
 
 PLOTS = Path(__file__).resolve().parent.parent / "plots"
 # Declared ordering of schemes along the throughput axis (edit to taste).
@@ -97,6 +98,37 @@ def print_table(table: list[dict]) -> None:
             print(f"    {dim:22s}: {st} | {ce}")
 
 
+def print_paired_perplexity(idx: dict) -> None:
+    """Perplexity deltas vs the FP16 baseline, paired per passage.
+
+    Two aggregate perplexity scalars cannot tell you whether a difference is
+    real. Every arm scores the identical corpus, so pairing cancels passage
+    difficulty -- the dominant variance term -- and yields an actual confidence
+    interval on the delta."""
+    base_rows = idx.get(SCHEME_ORDER[0], {}).get("quality", [])
+    if not base_rows:
+        return
+    baseline = base_rows[-1]["metrics"].get("perplexity", {})
+    if "per_passage" not in baseline:
+        print("\n=== Paired perplexity ===")
+        print("  baseline result predates per-passage retention; re-run the "
+              "quality eval to enable paired analysis.")
+        return
+
+    print("\n=== Paired perplexity vs " + SCHEME_ORDER[0] + " ===")
+    for scheme in SCHEME_ORDER[1:]:
+        rows = idx.get(scheme, {}).get("quality", [])
+        if not rows:
+            continue
+        variant = rows[-1]["metrics"].get("perplexity", {})
+        try:
+            r = paired_perplexity(baseline, variant)
+        except AlignmentError as e:
+            print(f"\n  {scheme}: CANNOT PAIR -- {e}")
+            continue
+        print("\n  " + format_paired(r, SCHEME_ORDER[0], scheme).replace("\n", "\n  "))
+
+
 def plot_headline(table: list[dict]) -> None:
     try:
         import matplotlib.pyplot as plt
@@ -133,6 +165,7 @@ def main() -> None:
     idx = index_results(rows)
     table = build_table(idx)
     print_table(table)
+    print_paired_perplexity(idx)
     plot_headline(table)
 
 

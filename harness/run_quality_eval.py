@@ -21,6 +21,7 @@ attribute a delta to the quant scheme vs the RNG.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -103,7 +104,8 @@ def perplexity(base_url: str, model: str, corpus_file: str) -> dict[str, Any]:
 
     total_nll = 0.0
     total_tokens = 0
-    for passage in passages:
+    per_passage: list[dict[str, Any]] = []
+    for idx, passage in enumerate(passages):
         r = requests.post(
             f"{base_url.rstrip('/')}/v1/completions",
             json={
@@ -133,13 +135,34 @@ def perplexity(base_url: str, model: str, corpus_file: str) -> dict[str, Any]:
                 "computed correctly without them (see _selected_logprob). "
                 "Confirm this vLLM version supports `return_token_ids`."
             )
+        p_nll = 0.0
+        p_tokens = 0
         for i, entry in enumerate(plps):
             if not entry:
                 continue
             lp = _selected_logprob(entry, token_ids[i])
             if lp is not None:
-                total_nll += -lp
-                total_tokens += 1
+                p_nll += -lp
+                p_tokens += 1
+        total_nll += p_nll
+        total_tokens += p_tokens
+        # Per-passage retention enables a PAIRED comparison across schemes.
+        # Every arm scores the identical token sequence, so passage difficulty
+        # -- the dominant variance term -- cancels in the per-passage
+        # difference. Comparing two aggregate scalars throws that away and
+        # leaves no uncertainty estimate at all.
+        #
+        # A HASH, never the text: results/raw/ is committed, and the corpus is
+        # private. The hash is only used to prove two runs scored the same
+        # passages before they are paired.
+        per_passage.append(
+            {
+                "i": idx,
+                "sha": hashlib.sha256(passage.encode("utf-8")).hexdigest()[:16],
+                "n_tokens": p_tokens,
+                "sum_nll": p_nll,
+            }
+        )
 
     if total_tokens == 0:
         raise SystemExit(
@@ -147,7 +170,19 @@ def perplexity(base_url: str, model: str, corpus_file: str) -> dict[str, Any]:
             "prompt_logprobs and echo=True for this vLLM version."
         )
     mean_nll = total_nll / total_tokens
-    return {"tokens_scored": total_tokens, "mean_nll": mean_nll, "perplexity": math.exp(mean_nll)}
+    return {
+        "tokens_scored": total_tokens,
+        "mean_nll": mean_nll,
+        "perplexity": math.exp(mean_nll),
+        # Identity of the corpus these numbers came from. Pairing across arms
+        # is only valid if this matches.
+        "corpus_file": str(corpus_file),
+        "corpus_sha": hashlib.sha256(
+            Path(corpus_file).read_bytes()
+        ).hexdigest()[:16],
+        "n_passages": len(per_passage),
+        "per_passage": per_passage,
+    }
 
 
 def _selected_logprob(entry: dict[str, Any], realized_token_id: int) -> float | None:

@@ -50,8 +50,25 @@ precision at which `curve_exists` flips to false.
    flag is identical and recorded.
 4. **Greedy decoding (T=0)** for all quality measurement, so a delta is
    attributable to the scheme, not to sampling RNG.
-5. **N ≥ 5 repeats** per config; report mean ± confidence interval, not a
-   single pass. Variance is itself a reported quantity.
+5. **N ≥ 5 repeats** per config for *timing* metrics (throughput, TTFT,
+   TPOT, e2e); report mean ± confidence interval, not a single pass. Variance
+   is itself a reported quantity.
+
+   **Quality metrics need a different uncertainty model.** Perplexity and task
+   accuracy are deterministic here — greedy decoding, fixed corpus, fixed task
+   set — so repeating a run reproduces the same number to within kernel
+   reduction-order jitter. Reporting a CI over repeats would be tight and
+   meaningless. The real question is *corpus* sampling: would a different
+   held-out set have given a different answer? That is estimated by
+   bootstrapping over **passages**, not over runs (tokens within a passage are
+   strongly correlated, so resampling tokens would understate the interval).
+
+   Perplexity is further compared **paired**: every scheme scores the identical
+   token sequence, so passage difficulty — the dominant variance term — cancels
+   exactly in the per-passage difference. On synthetic data with realistic
+   difficulty spread this is ~2 orders of magnitude tighter than comparing two
+   aggregate scalars, which is the difference between resolving a small
+   degradation and not. See `harness/paired.py`.
 6. **Environment fingerprint** (driver, CUDA, vLLM/torch/flashinfer versions,
    locked clock, observed temp + power, git commit) stamped into **every**
    result JSON. A dirty git tree triggers a loud warning.
