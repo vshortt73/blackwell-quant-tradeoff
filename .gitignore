@@ -11,6 +11,10 @@ data/*
 # Full per-item task text for debugging. results/raw/ is committed; this is not,
 # so task sets can be built from private material without publishing them.
 results/audit/
+
+# APEX raw databases: large, and regenerable by re-running the harness.
+# The derived per-dimension results land in results/raw/ and ARE committed.
+results/apex/
 models/
 .venv/
 *.log

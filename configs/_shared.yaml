@@ -63,9 +63,28 @@ quality:
 
 
 apex:
-  # passthrough to your APEX characterization run (dimensions, probe sets, etc.)
-  probe_set: "default"
-  repeats: 5
+  # APEX runs as a subprocess against the live vLLM OpenAI endpoint; its
+  # `openai` backend takes a base_url, so no shim is needed.
+  apex_home: "/opt/apex"
+  apex_bin: "/opt/apex/.venv/bin/apex"
+  probe_select: "all"          # must yield all three dimensions
+  repetitions: 5
+  filler_type: "neutral"
+  seed: 42
+  workers: 4
+  # Positions are the independent variable of the curve; keep IDENTICAL across
+  # every scheme or the curves are not comparable.
+  positions: [0.02, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.98]
+  context_lengths: [4096, 8192]
+  max_context_window: 8192     # must not exceed max_model_len
+  architecture: "transformer-dense"
+  parameters: "8B"
+  # Curve-existence detection (harness/apex_curve.py). APEX does NOT report
+  # curve_exists/curve_strength; they are derived from its per-position scores
+  # by a permutation test on eta-squared. Seeded, so verdicts reproduce.
+  n_perm: 10000
+  alpha: 0.05
+  curve_seed: 20260819
 
 # --- telemetry sampling (controlled) ---
 power_sample_interval_s: 0.25   # background nvidia-smi poll during measured interval
