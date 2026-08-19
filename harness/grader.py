@@ -35,7 +35,7 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-GRADER_VERSION = "1.0.0"
+GRADER_VERSION = "1.1.0"
 
 # Sentence/clause terminators that end the first answer segment. A period is
 # only a terminator when it is NOT a decimal point -- otherwise "3.140" gets
@@ -51,6 +51,17 @@ _NEGATIONS = (
 _NEG_WINDOW_CHARS = 24
 
 _NUMBER = re.compile(r"[-+]?\d{1,3}(?:,\d{3})+(?:\.\d+)?|[-+]?\d*\.?\d+")
+
+# Models answer small integers in words as often as in digits ("reduces memory
+# by a factor of four"). Scoring that wrong measures our parser, not the model.
+_WORD_NUMBERS = {
+    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
+    "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+    "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16,
+    "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20,
+    "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70,
+    "eighty": 80, "ninety": 90, "hundred": 100, "thousand": 1000,
+}
 
 
 @dataclass
@@ -100,13 +111,24 @@ def _as_number(s: str) -> float | None:
 
 
 def _first_number(text: str) -> tuple[float, str] | None:
+    """First number in the text, digits or a spelled-out small integer.
+
+    Whichever appears EARLIEST wins, so "four, but 3 caveats" resolves to 4 --
+    the answer the model actually gave, not a later incidental number."""
     m = _NUMBER.search(text)
-    if not m:
+    best: tuple[int, float, str] | None = None
+    if m:
+        try:
+            best = (m.start(), float(m.group(0).replace(",", "")), m.group(0))
+        except ValueError:
+            best = None
+    for word, val in _WORD_NUMBERS.items():
+        wm = re.search(rf"(?<!\w){re.escape(word)}(?!\w)", text)
+        if wm and (best is None or wm.start() < best[0]):
+            best = (wm.start(), float(val), wm.group(0))
+    if best is None:
         return None
-    try:
-        return float(m.group(0).replace(",", "")), m.group(0)
-    except ValueError:
-        return None
+    return best[1], best[2]
 
 
 def _numbers_equal(a: float, b: float, rel_tol: float, abs_tol: float) -> bool:

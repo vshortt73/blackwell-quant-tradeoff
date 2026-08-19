@@ -41,6 +41,15 @@ CASES = [
     ("41", "42", (), False, "off-by-one"),
     ("no number here", "42", (), False, "numeric answer, no number returned"),
 
+    # --- spelled-out numbers (models answer in words as often as digits) --- #
+    ("four", "4", (), True, "bare word number"),
+    ("four, but introduces quantization error", "4", (), True,
+     "word number followed by elaboration"),
+    ("The factor is sixteen", "16", (), True, "word number in prose"),
+    ("three", "4", (), False, "wrong word number"),
+    ("4", "4", (), True, "digits still work"),
+    ("forty", "40", (), True, "tens word"),
+
     # --- aliases ---------------------------------------------------------- #
     ("NYC is the largest", "New York City", ("NYC",), True, "alias hit"),
     ("New  York   City", "New York City", (), True, "multi-word, odd spacing"),
