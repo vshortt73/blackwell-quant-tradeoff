@@ -65,10 +65,14 @@ precision at which `curve_exists` flips to false.
 
    Perplexity is further compared **paired**: every scheme scores the identical
    token sequence, so passage difficulty — the dominant variance term — cancels
-   exactly in the per-passage difference. On synthetic data with realistic
-   difficulty spread this is ~2 orders of magnitude tighter than comparing two
-   aggregate scalars, which is the difference between resolving a small
-   degradation and not. See `harness/paired.py`.
+   exactly in the per-passage difference.
+
+   This is not a marginal refinement. Measured on 198 passages / 82,282 tokens
+   of held-out prose, AWQ-4bit vs the bf16 baseline: the paired interval is
+   `[+0.0534, +0.0636]` nats/token and resolves a real 6.0% perplexity
+   degradation, while the unpaired interval `[-0.0667, +0.1833]` spans zero and
+   would have reported **no detectable difference**. Same data, same runs — 24x
+   tighter. See `harness/paired.py`.
 6. **Environment fingerprint** (driver, CUDA, vLLM/torch/flashinfer versions,
    locked clock, observed temp + power, git commit) stamped into **every**
    result JSON. A dirty git tree triggers a loud warning.

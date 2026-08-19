@@ -19,6 +19,17 @@ Bootstrap over passages, not tokens: tokens within a passage are strongly
 correlated, so treating them as independent would understate the interval by a
 large factor. Resampling whole passages respects that correlation.
 
+Measured on real data (Qwen3-8B, 198 passages / 82,282 tokens of held-out
+private prose, AWQ-4bit vs the bf16 baseline):
+
+    paired    delta +0.05833 nats/token  [+0.05338, +0.06359]  SIGNIFICANT
+    unpaired  delta                      [-0.06674, +0.18328]  spans zero
+
+Same data, same measurement. The unpaired comparison FAILS TO DETECT a real
+6.0% perplexity degradation; the paired one resolves it with room to spare
+(24x tighter interval). That is the entire argument for retaining per-passage
+numbers instead of collapsing to a scalar.
+
 The bootstrap is seeded, so the same inputs give the same interval every time.
 """
 
