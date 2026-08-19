@@ -59,7 +59,7 @@ sudo ./env/gpu_setup.sh 0 2400 500        # <gpu> <sm_clock_mhz> <power_w>
 # 3. start vLLM for a scheme. Quantization is auto-detected from the
 #    checkpoint; the attention backend is NOT, so pin it (controlled variable).
 #    Exact per-scheme command is in the launch comment of each configs/*.yaml.
-VLLM_ATTENTION_BACKEND=FLASH_ATTN \
+VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
   .venv/bin/vllm serve /path/to/Qwen3-8B-FP8 \
     --gpu-memory-utilization 0.85 --max-model-len 8192 \
     --port 8000 --served-model-name model-under-test

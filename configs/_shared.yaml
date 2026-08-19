@@ -20,6 +20,12 @@ max_model_len: 8192
 # silently get a different backend and break the comparison.
 # Export before launching:  VLLM_ATTENTION_BACKEND=FLASH_ATTN
 attention_backend: "FLASH_ATTN"
+# DeepGEMM must be OFF: its scale-factor layout transform crashes on sm_120
+# when loading block-scaled FP8 weights ("Unknown SF transformation"). With it
+# disabled vLLM selects the native CutlassFp8BlockScaledMMKernel. Set for EVERY
+# arm so the environment is identical -- it is a no-op for FP16 and AWQ.
+# Export before launching:  VLLM_USE_DEEP_GEMM=0
+use_deep_gemm: false
 gpu_memory_utilization: 0.85
 max_tokens: 256
 n_requests: 200

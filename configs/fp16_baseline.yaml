@@ -1,7 +1,7 @@
 config_name: "fp16_baseline"
 quant_scheme: "FP16"
 # launch:
-#   VLLM_ATTENTION_BACKEND=FLASH_ATTN \
+#   VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
 #   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B \
 #     --gpu-memory-utilization 0.85 --max-model-len 8192 \
 #     --port 8000 --served-model-name model-under-test

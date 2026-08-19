@@ -3,7 +3,7 @@ quant_scheme: "AWQ-4bit"
 # AWQ 4-bit is the documented fix for Blackwell garbage-character output and is
 # the aggressive-throughput end of the sweep.
 # launch (quantization is auto-detected from the checkpoint config):
-#   VLLM_ATTENTION_BACKEND=FLASH_ATTN \
+#   VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
 #   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B-AWQ \
 #     --gpu-memory-utilization 0.85 --max-model-len 8192 \
 #     --port 8000 --served-model-name model-under-test

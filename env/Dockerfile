@@ -22,5 +22,7 @@ COPY . /app
 
 # Attention backend is a controlled variable -- pin it, do not let vLLM choose.
 ENV VLLM_ATTENTION_BACKEND=FLASH_ATTN
+# DeepGEMM crashes loading block-scaled FP8 weights on sm_120; see LANDMINES.md.
+ENV VLLM_USE_DEEP_GEMM=0
 
 CMD ["bash"]

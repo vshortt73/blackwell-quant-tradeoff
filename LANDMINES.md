@@ -74,13 +74,48 @@ flashinfer 0.6.16.post3        transformers 5.15.0
 - Fix: request `return_token_ids: true` and look the realized token up by id.
   See `harness/run_quality_eval.py::_selected_logprob`.
 
+### NEW LANDMINE: FP8 checkpoint crashes at load via DeepGEMM on sm_120
+- Environment: driver 580.159.03, CUDA 13.0, kernel 6.17.0-35-generic,
+  torch 2.13.0+cu130, vLLM 0.27.1, Qwen3-8B-FP8 (e4m3, block 128x128).
+- Symptom: server dies ~40 s into startup, during weight post-processing:
+  ```
+  RuntimeError: Assertion error
+  (/workspace/.deps/deepgemm-src/csrc/apis/layout.hpp:60):
+  Unknown SF transformation
+  ```
+  Raised from `deepgemm_post_process_fp8_weight_block` ->
+  `transform_sf_into_required_layout`.
+- Root cause: vLLM defaults `VLLM_USE_DEEP_GEMM=True`, so block-scaled FP8
+  weights are routed through DeepGEMM. DeepGEMM's scale-factor layout
+  transform does not handle this layout on sm_120 (consumer Blackwell); it
+  targets the datacenter parts. Nothing about the checkpoint is wrong.
+- Fix: `VLLM_USE_DEEP_GEMM=0`. vLLM then selects
+  `CutlassFp8BlockScaledMMKernel for Fp8LinearMethod` -- the native FP8
+  tensor-core path -- and the server starts normally.
+- Cost: ~5 min. The traceback names DeepGEMM directly, which is the tell; the
+  misleading part is that it looks like a bad checkpoint rather than a kernel
+  selection default.
+- CONTROL NOTE: set `VLLM_USE_DEEP_GEMM=0` for **every** arm, not just FP8, so
+  the environment is identical across the comparison. It only affects FP8 GEMM
+  selection, so it is a no-op for FP16 and AWQ.
+
+### RESOLVED: FP8 native path confirmed (not emulated)
+- `Selected CutlassFp8BlockScaledMMKernel for Fp8LinearMethod` -- CUTLASS FP8
+  block-scaled GEMM on FP8 tensor cores. Not emulated, not a Marlin fallback.
+  The WSL2/dxgkrnl emulation artifact does not apply on native Linux, as
+  suspected.
+- Qwen3-8B-FP8 at `--gpu-memory-utilization 0.85 --max-model-len 8192`:
+  10.29 GiB weights+non-torch, 1.24 GiB peak activation, 0.44 GiB CUDA graphs,
+  leaving **15.1 GiB KV cache = 109,968 tokens**.
+- Output is coherent across several prompts; no garbage characters observed.
+- Informal single-request throughput ~140 tok/s (N=3, unlocked clocks, NOT a
+  measured result -- recorded only to show the path is not pathologically slow,
+  which is how the emulated fallback presents).
+
 ### STILL UNVERIFIED on this box
 Do not treat these as cleared -- they were not exercised:
-- **FP8 native vs emulated path.** Only the AWQ arm has been served so far. The
-  FP8 arm must still be launched and its server log checked, since the entire
-  FP8-native comparison depends on the real path being active.
-- **Garbage-character output.** Not observed in a handful of AWQ completions,
-  which is far too small a sample to call it refuted.
+- **Garbage-character output.** Not observed in AWQ or FP8 smoke tests, but the
+  sample is far too small to call it refuted.
 - **Tailscale / CUDA init at boot.** Not tested.
 - **P2P deadlocks / `NCCL_DMABUF_ENABLE`.** Single-GPU study; not applicable.
 

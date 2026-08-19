@@ -4,7 +4,7 @@ quant_scheme: "FP8-native"
 # emulated fallback was a WSL2/dxgkrnl limitation). vLLM v0.17.0+ ships a
 # dedicated SM120 FP8 GEMM path.
 # launch (quantization is auto-detected from the checkpoint config):
-#   VLLM_ATTENTION_BACKEND=FLASH_ATTN \
+#   VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
 #   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B-FP8 \
 #     --gpu-memory-utilization 0.85 --max-model-len 8192 \
 #     --port 8000 --served-model-name model-under-test
