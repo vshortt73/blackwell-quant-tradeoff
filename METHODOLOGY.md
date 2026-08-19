@@ -92,6 +92,48 @@ precision at which `curve_exists` flips to false.
   emulated fallback (a WSL2/dxgkrnl artifact that does not apply on native
   Linux).
 
+## Measured knowledge cutoff (Qwen3-8B)
+
+The task-accuracy anchor needs items the baseline can plausibly get wrong, and
+on this model the only reliable source of difficulty is facts postdating its
+training. That boundary therefore has to be **measured, not assumed**.
+
+**There is no official cutoff from the Qwen team.** The model card states none,
+and the QwenLM discussion asking for one
+(github.com/QwenLM/Qwen3/discussions/1093) was never answered by a maintainer.
+The "January 2025" figure in circulation comes from third-party aggregator
+sites, not Alibaba. Self-report is worthless: asked three ways, the model
+answered "July 2024", "2024", and "2023".
+
+Measured directly against BF16 (greedy, `/v1/completions`):
+
+| date | probe | result |
+|---|---|---|
+| 2024-10 | 2024 Physics Nobel for neural networks | **knows** — names Hinton |
+| 2024-11 | 2024 US election winner; Republican VP nominee | **knows** — Trump, JD Vance |
+| 2024-12-08 | Assad removed from power in Syria | **fails** — *"was not removed"*, says 2020 |
+| 2024-12-03 | South Korea martial law | year guessable, details fabricated (invents cyberattacks) |
+| 2025-01 | 47th US President | **fails** — hallucinates a film character |
+| 2025-01 | DeepSeek R1 | **fails** — answers "SenseTime" |
+| 2025-01 | NVIDIA CES 2025 architecture | **fails** — answers "Ada Lovelace" |
+| 2025-04 | Qwen3's own release year | **fails** — answers 2024 |
+
+**Effective cutoff: approximately November 2024.** December 2024 is already a
+grey zone where the model produces plausible years with confabulated detail —
+the characteristic signature of the boundary.
+
+Working rules for authoring items:
+- Facts dated **2025 or later are reliably outside** the model's knowledge.
+- December 2024 is unusable: right-for-the-wrong-reason answers are
+  indistinguishable from knowledge.
+- Coverage is **not uniform by domain**. It failed CES 2025 GPU facts while
+  handling contemporaneous general news, so hardware/software specifics thin
+  out earlier than general events.
+- A post-cutoff item measures *absence of knowledge*, which is stable under
+  quantization in a way genuine recall is not. Such items make the baseline
+  look harder without adding sensitivity — see `harness/check_tasks.py` on why
+  chasing a low baseline with post-cutoff trivia is a trap.
+
 ## What each outcome means
 
 - **Curves separate** (H1 supported): the headline finding. Report the precise
