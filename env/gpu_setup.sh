@@ -29,12 +29,23 @@ echo "== Locked state =="
 nvidia-smi -i "${GPU}" --query-gpu=name,driver_version,clocks.sm,clocks.max.sm,power.limit,temperature.gpu,pstate \
   --format=csv,noheader
 
-# Assertions: fail loudly if the box isn't in the state we think it is.
-CAP="$(python3 - <<'PY'
-import torch
-print("sm_%d%d" % torch.cuda.get_device_capability(0)) if torch.cuda.is_available() else print("none")
+# Assertions: report the compute capability if we can. This runs under sudo, so
+# the python on PATH is usually the SYSTEM one, which does not have torch --
+# the project venv does. Try the venv first, and NEVER let this informational
+# check abort the run: the clock lock above has already been applied, and
+# failing here would leave the GPU locked while the script reports failure.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PYBIN="${SCRIPT_DIR}/../.venv/bin/python"
+[ -x "$PYBIN" ] || PYBIN="$(command -v python3 || true)"
+CAP="$("$PYBIN" - <<'PY' 2>/dev/null || true
+try:
+    import torch
+    print("sm_%d%d" % torch.cuda.get_device_capability(0) if torch.cuda.is_available() else "none")
+except Exception:
+    print("unknown (torch not importable by this interpreter)")
 PY
 )"
+CAP="${CAP:-unknown}"
 echo "Detected compute capability: ${CAP}"
 if [ "${CAP}" != "sm_120" ]; then
   echo "[NOTE] Expected sm_120 (Blackwell 5090). Got ${CAP}. If you're baselining"

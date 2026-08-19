@@ -6,7 +6,7 @@ quant_scheme: "FP8-native"
 # launch (quantization is auto-detected from the checkpoint config):
 #   VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
 #   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B-FP8 \
-#     --gpu-memory-utilization 0.85 --max-model-len 8192 \
+#     --gpu-memory-utilization 0.85 --max-model-len 12288 \
 #     --port 8000 --served-model-name model-under-test \
 #     --reasoning-parser qwen3
 #   (--reasoning-parser is REQUIRED for the APEX pass: without it,

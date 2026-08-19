@@ -13,7 +13,12 @@ base_url: "http://127.0.0.1:8000"
 served_model_name: "model-under-test"
 
 # --- controlled: identical across all schemes ---
-max_model_len: 8192
+# 12288, not 8192: APEX targets 8192-TOKEN CONTEXTS, and an 8192-token prompt
+# in an 8192-token window leaves no room to generate. The window must exceed the
+# largest probe context plus max_tokens. Identical across arms, so it is
+# controlled; it does not change total KV memory (that is set by
+# gpu_memory_utilization), only the longest permitted sequence.
+max_model_len: 12288
 # Attention backend is a CONTROLLED variable, so PIN it rather than letting
 # vLLM auto-select. On this stack vLLM chose FLASH_ATTN from
 # [FLASH_ATTN, FLASHINFER, TRITON_ATTN, FLEX_ATTENTION]; a different arm could
@@ -108,6 +113,40 @@ apex:
   n_perm: 10000
   alpha: 0.05
   curve_seed: 20260819
+  # Probe subset for pass 1, from harness/check_probes.py against BF16.
+  # 28 of 60 seed probes are usable on Qwen3-8B: 14 factual probes sit at
+  # ceiling, 14 salience probes at floor. Running the excluded 32 costs hours
+  # and cannot register a result. Re-derive per model -- difficulty is relative
+  # to the model under test.
+  probes_usable_qwen3_8b:
+    - I-001
+    - I-002
+    - I-005
+    - I-006
+    - I-007
+    - I-008
+    - I-009
+    - I-010
+    - I-012
+    - I-013
+    - I-014
+    - I-015
+    - I-016
+    - I-017
+    - I-018
+    - I-020
+    - F-008
+    - F-009
+    - F-013
+    - F-014
+    - F-015
+    - F-019
+    - S-005
+    - S-008
+    - S-010
+    - S-014
+    - S-017
+    - S-018
 
 # --- telemetry sampling (controlled) ---
 power_sample_interval_s: 0.25   # background nvidia-smi poll during measured interval
