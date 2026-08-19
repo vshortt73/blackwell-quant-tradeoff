@@ -220,6 +220,11 @@ def paired_accuracy(
         raise AlignmentError(
             f"different task files: {baseline.get('task_sha')} vs {variant.get('task_sha')}"
         )
+    if baseline.get("few_shot_sha") != variant.get("few_shot_sha"):
+        raise AlignmentError(
+            "different few-shot prefixes -- the arms were not prompted "
+            "identically, so the comparison is invalid"
+        )
     a, b_ = baseline["per_item"], variant["per_item"]
     if len(a) != len(b_):
         raise AlignmentError(f"item count differs: {len(a)} vs {len(b_)}")

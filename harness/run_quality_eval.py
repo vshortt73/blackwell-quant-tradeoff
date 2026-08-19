@@ -60,6 +60,7 @@ def task_accuracy(
     task_file: str,
     max_tokens: int,
     audit: list[dict[str, Any]] | None = None,
+    few_shot: str = "",
 ) -> dict[str, Any]:
     """task_file: JSONL of {"prompt":..., "answer":..., "aliases":[...] (opt),
     "whole_response": bool (opt)}.
@@ -79,7 +80,7 @@ def task_accuracy(
     rule_counts: dict[str, int] = {}
     per_item: list[dict[str, Any]] = []
     for idx, it in enumerate(items):
-        out = _completion(base_url, model, it["prompt"], max_tokens)
+        out = _completion(base_url, model, few_shot + it["prompt"], max_tokens)
         text = out["choices"][0]["text"]
         g = grade(
             text,
@@ -113,6 +114,9 @@ def task_accuracy(
         "rule_counts": rule_counts,
         "task_file": str(task_file),
         "task_sha": hashlib.sha256(Path(task_file).read_bytes()).hexdigest()[:16],
+        # Proof the same prefix was used on every arm; a differing prefix would
+        # invalidate the paired comparison as surely as a differing task file.
+        "few_shot_sha": hashlib.sha256(few_shot.encode("utf-8")).hexdigest()[:16],
         "per_item": per_item,
     }
 
@@ -249,7 +253,7 @@ def main() -> None:
     if q.get("task_file"):
         metrics["task_accuracy"] = task_accuracy(
             cfg["base_url"], cfg["served_model_name"], q["task_file"],
-            q.get("max_tokens", 32), audit=audit,
+            q.get("max_tokens", 32), audit=audit, few_shot=q.get("few_shot", ""),
         )
     if q.get("corpus_file"):
         metrics["perplexity"] = perplexity(

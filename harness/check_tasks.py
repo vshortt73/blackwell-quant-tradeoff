@@ -9,12 +9,23 @@ Two modes:
              DIFFICULTY CALIBRATION, which is the design decision that most
              often ruins an accuracy anchor.
 
-On calibration: a task set the baseline answers perfectly cannot detect
-degradation -- every arm scores 1.0 and you have measured that quantization
-does not break trivia. A set it answers at chance is equally useless. The
-discriminating region is where the model is at the EDGE of its competence,
-because that is where small numerical perturbations flip answers. Aim for a
-baseline around 0.70-0.85.
+On calibration: a task set the baseline answers PERFECTLY cannot detect
+degradation -- every arm scores 1.0. A set it answers at chance is equally
+useless, since misses then reflect prompt format rather than capability.
+
+But do not chase a low baseline blindly. Measured on Qwen3-8B/BF16, this model
+answers essentially all short-answer factual and computational items
+correctly -- obscure entities (Thimphu, Borrelia burgdorferi, 1729), precise
+constants (299792458, 5730, 44.1), and arithmetic (53x47, gcd(462,1071)) alike.
+Its only reliable failures are facts postdating its training cutoff. Forcing a
+0.70-0.85 baseline on such a model means loading the set with post-cutoff tech
+trivia, which re-clusters every discriminating item into one domain and breaks
+the independence McNemar assumes.
+
+So: 0.70-0.85 is ideal when reachable with a BROAD set. When it is not, prefer
+breadth at a higher baseline and add items -- McNemar needs discordant pairs,
+and those come from items near the decision boundary, which exist at 0.92 too.
+There are simply fewer per hundred, so raise n.
 
 Usage:
     python harness/check_tasks.py data/tasks.jsonl
@@ -128,16 +139,15 @@ def main() -> int:
         return 0
 
     # --- difficulty probe -------------------------------------------------- #
-    import yaml
     import requests
 
-    cfg = yaml.safe_load(Path(args.config).read_text())
-    shared = Path(args.config).parent / "_shared.yaml"
-    merged = (yaml.safe_load(shared.read_text()) or {}) if shared.exists() else {}
-    merged.update(cfg)
+    from common import load_config
+
+    merged = load_config(args.config)
     base_url = merged["base_url"]
     model = merged["served_model_name"]
     max_tokens = merged.get("quality", {}).get("max_tokens", 32)
+    few_shot = merged.get("quality", {}).get("few_shot", "")
 
     probe = items[: args.limit] if args.limit else items
     correct = 0
@@ -146,7 +156,7 @@ def main() -> int:
     for lineno, it in probe:
         r = requests.post(
             f"{base_url.rstrip('/')}/v1/completions",
-            json={"model": model, "prompt": it["prompt"],
+            json={"model": model, "prompt": few_shot + it["prompt"],
                   "max_tokens": max_tokens, "temperature": 0.0},
             timeout=120,
         )
@@ -163,10 +173,15 @@ def main() -> int:
     print(f"\n=== difficulty probe ({len(probe)} items, {args.config}) ===")
     print(f"  baseline accuracy : {acc:.3f}  ({correct}/{len(probe)})")
     print(f"  deciding rules    : {dict(rules)}")
-    if acc >= 0.95:
-        print("\n  [CEILING] the baseline answers nearly everything. Quantization "
-              "damage will have almost nothing to break, so all three arms will "
-              "look identical. Add harder items.")
+    if acc >= 0.98:
+        print("\n  [CEILING] the baseline answers essentially everything. Add harder "
+              "items, or if the model has no reachable competence edge (common for "
+              "strong models on short-answer recall), raise n instead so enough "
+              "boundary items exist to flip.")
+    elif acc >= 0.90:
+        print(f"\n  [HIGH] baseline {acc:.2f}. Usable, but only ~{int(len(probe)*(1-acc))} "
+              "items per " f"{len(probe)} sit near the boundary where flips happen. "
+              "Scale n so discordant pairs are not vanishingly rare.")
     elif acc <= 0.40:
         print("\n  [FLOOR] the baseline fails most items, so degradation has "
               "little room to show and misses may reflect prompt format rather "

@@ -185,16 +185,31 @@ def load_config(path: str | Path) -> dict[str, Any]:
     place it is written down.
     """
     path = Path(path)
+    import yaml
+
     cfg: dict[str, Any] = {}
     shared = path.parent / "_shared.yaml"
     if shared.exists() and shared.resolve() != path.resolve():
-        import yaml
+        cfg = yaml.safe_load(shared.read_text()) or {}
+    scheme = yaml.safe_load(path.read_text()) or {}
+    return _deep_merge(cfg, scheme)
 
-        cfg.update(yaml.safe_load(shared.read_text()) or {})
-    import yaml
 
-    cfg.update(yaml.safe_load(path.read_text()) or {})
-    return cfg
+def _deep_merge(base: dict[str, Any], over: dict[str, Any]) -> dict[str, Any]:
+    """Recursive merge, `over` winning on conflicts.
+
+    A shallow update() is wrong here: a scheme file that sets `quality:` at all
+    would replace the ENTIRE shared quality block, silently dropping controlled
+    keys the scheme never mentioned (this really happened -- it dropped the
+    few-shot prefix from every run). Nested control blocks must merge key by
+    key, not wholesale."""
+    out = dict(base)
+    for k, v in over.items():
+        if isinstance(v, dict) and isinstance(out.get(k), dict):
+            out[k] = _deep_merge(out[k], v)
+        else:
+            out[k] = v
+    return out
 
 
 def declared_controls(cfg: dict[str, Any]) -> dict[str, Any]:
