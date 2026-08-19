@@ -1,0 +1,22 @@
+config_name: "fp16_baseline"
+quant_scheme: "FP16"
+# launch: vllm serve <model> --dtype float16 \
+#   --gpu-memory-utilization 0.85 --max-model-len 8192 \
+#   --port 8000 --served-model-name model-under-test
+model: "Qwen3.6-35B-A3B"
+base_url: "http://127.0.0.1:8000"
+served_model_name: "model-under-test"
+max_tokens: 256
+n_requests: 200
+concurrency_levels: [1, 4, 16, 64]
+warmup_requests: 8
+throughput_temperature: 0.0
+input_profile: "512in_256out_var64"
+prompt_file: "data/prompts_512in.txt"
+quality: {task_file: "data/tasks.jsonl", corpus_file: "data/heldout_corpus.txt", max_tokens: 32}
+apex: {probe_set: "default", repeats: 5}
+notes: "Reference point. All retention/throughput deltas are relative to this."
+
+# --- telemetry sampling (controlled) ---
+power_sample_interval_s: 0.25   # background nvidia-smi poll during measured interval
+gpu_index: 0                    # index WITHIN CUDA_VISIBLE_DEVICES (pinned to one GPU)

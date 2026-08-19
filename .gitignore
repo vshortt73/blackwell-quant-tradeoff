@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+data/          # your prompt sets / corpora / task files -- keep out of git if licensing is unclear
+models/
+.venv/
+*.log

@@ -1,0 +1,25 @@
+config_name: "fp8_native"
+quant_scheme: "FP8-native"
+# Blackwell has native FP8 tensor cores; on LINUX these are exposed (the ugly
+# emulated fallback was a WSL2/dxgkrnl limitation). vLLM v0.17.0+ ships a
+# dedicated SM120 FP8 GEMM path.
+# launch: vllm serve <model> --quantization fp8 \
+#   --gpu-memory-utilization 0.85 --max-model-len 8192 \
+#   --port 8000 --served-model-name model-under-test
+model: "Qwen3.6-35B-A3B"
+base_url: "http://127.0.0.1:8000"
+served_model_name: "model-under-test"
+max_tokens: 256
+n_requests: 200
+concurrency_levels: [1, 4, 16, 64]
+warmup_requests: 8
+throughput_temperature: 0.0
+input_profile: "512in_256out_var64"
+prompt_file: "data/prompts_512in.txt"
+quality: {task_file: "data/tasks.jsonl", corpus_file: "data/heldout_corpus.txt", max_tokens: 32}
+apex: {probe_set: "default", repeats: 5}
+notes: "Quantize from the SAME base weights as FP16. Confirm native (not emulated) FP8 path in server logs."
+
+# --- telemetry sampling (controlled) ---
+power_sample_interval_s: 0.25   # background nvidia-smi poll during measured interval
+gpu_index: 0                    # index WITHIN CUDA_VISIBLE_DEVICES (pinned to one GPU)

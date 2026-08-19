@@ -1,0 +1,16 @@
+# PIN EXACT VERSIONS after your first clean install. Ranges are forbidden in a
+# reproducibility artifact -- the whole point is that someone can recreate the
+# exact stack that produced the numbers. Fill these from `pip freeze` on the
+# working environment, then commit.
+#
+# The four that decide whether sm_120 works at all (fill with YOUR working set):
+#   torch==            # cu128 build; must target Blackwell
+#   vllm==             # >= 0.17.0 for the SM120 FP8 GEMM path
+#   flashinfer==       # attention backend; Flash-Attn bypass on kernel 6.14
+#   transformers==
+#
+# Harness deps (safe to pin now):
+aiohttp==3.10.11
+requests==2.32.3
+pyyaml==6.0.2
+matplotlib==3.9.2
