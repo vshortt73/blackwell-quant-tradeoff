@@ -149,10 +149,15 @@ def build_dimension_results(
                 "(only exact-match and programmatic probes survive)."
             )
 
-        by_ctx: dict[int, list[tuple[float, float]]] = {}
+        # probe_id is REQUIRED: the detector removes probe difficulty before
+        # testing position, because probe identity explains ~20x more variance
+        # than position does. See harness/apex_curve.py.
+        by_ctx: dict[int, list[tuple[str, float, float]]] = {}
         for r in scored:
             by_ctx.setdefault(int(r["context_length"]), []).append(
-                (float(r["target_position_percent"]), float(r["score"]))
+                (str(r.get("probe_id", "?")),
+                 float(r["target_position_percent"]),
+                 float(r["score"]))
             )
         per_ctx = {
             str(c): detect_curve(o, n_perm=n_perm, seed=seed, alpha=alpha).as_dict()
@@ -183,8 +188,9 @@ def build_dimension_results(
                     "n_scored": len(scored),
                     "n_unscored": len(dim_rows) - len(scored),
                     "per_context_length": per_ctx,
+                    "n_probes": head.n_probes,
                     "curve_detector": {
-                        "method": "permutation test on eta-squared",
+                        "method": "permutation test on within-probe eta-squared",
                         "n_perm": n_perm,
                         "alpha": alpha,
                         "seed": seed,

@@ -134,6 +134,55 @@ Working rules for authoring items:
   look harder without adding sensitivity — see `harness/check_tasks.py` on why
   chasing a low baseline with post-cutoff trivia is a trap.
 
+## Probe-set validity (measured, before running)
+
+Before committing GPU time, the existing APEX history was re-analysed: 11,189
+scored rows spanning 8 models, 3 dimensions, and context lengths to 16,384.
+
+**Where the variance actually lives** (mean across 34 model-dimension-context
+cells):
+
+| source | eta-squared |
+|---|---|
+| probe identity | **0.630** |
+| position | 0.031 |
+| repetition | **0.000** |
+
+Three things follow.
+
+1. **The measurement is exactly deterministic.** Repetition explains zero
+   variance, confirming greedy decoding leaves no sampling noise. Nothing is
+   hidden by run-to-run jitter, and repeats add no information about
+   uncertainty (see control 5).
+2. **APEX mostly measures probe difficulty.** Probe identity dominates position
+   by 20x. Any analysis that pools across probes is therefore testing position
+   against a much larger nuisance term.
+3. **Position must be tested within probe.** Every probe appears at every
+   position, so this is a repeated-measures design. Pooled, only **1 of 35**
+   cells showed a positional effect — indistinguishable from the ~1.75 false
+   positives expected at alpha=0.05. Removing each probe's mean first, **7 of
+   34** cells show one, and mean eta-squared rises 0.031 -> 0.077.
+
+So the positional signal is **real but small**, and it was previously invisible
+for methodological rather than empirical reasons. `harness/apex_curve.py`
+therefore tests within-probe.
+
+**Where the signal concentrates**, from the same re-analysis: salience shows the
+strongest effects (eta-squared up to 0.228), and longer contexts show more than
+short ones — 8,192 and 16,384 dominate the significant cells, 4,096 rarely
+qualifies. This is consistent with positional effects needing context length to
+manifest.
+
+**Consequences for this study, stated plainly.** Effects of this size are small
+enough that `curve_exists` will behave as a noisy binary near the alpha
+threshold. Reporting the *continuous* `curve_strength` with an interval, and
+comparing it across schemes, is more honest than reporting a boolean flip — a
+dimension crossing from p=0.04 to p=0.06 is not evidence that quantization
+destroyed a capability. The pre-registered outcome "no curve exists even at
+BF16" remains a live possibility for at least some dimensions, and if it
+obtains, that dimension is excluded from the degradation claim rather than
+reported as a collapse.
+
 ## What each outcome means
 
 - **Curves separate** (H1 supported): the headline finding. Report the precise

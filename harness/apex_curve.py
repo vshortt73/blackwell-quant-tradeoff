@@ -11,12 +11,31 @@ choice, so it is defined here explicitly rather than buried in a query.
 
 THE DEFINITION
 A dimension has an exploitable curve at a given context length if POSITION
-EXPLAINS VARIANCE IN SCORE BEYOND CHANCE.
+EXPLAINS VARIANCE IN SCORE BEYOND CHANCE, *after removing probe difficulty*.
 
-  curve_strength = eta-squared = SS_between_positions / SS_total
-                   (0 = position irrelevant, 1 = position explains everything)
+  curve_strength = within-probe eta-squared: each probe's mean is subtracted,
+                   then SS_between_positions / SS_total on the residuals
+  curve_exists   = permutation test on that statistic, p < alpha
 
-  curve_exists   = permutation test on eta-squared, p < alpha
+WHY WITHIN-PROBE. Every probe is presented at every position, so this is a
+repeated-measures design and probe difficulty is a nuisance term that can be
+differenced out. It is not a small correction. Measured across 11,189 rows
+spanning 8 models in the APEX history:
+
+    probe identity            explains 0.630 of score variance
+    position                  explains 0.031
+    repetition (noise floor)  explains 0.000
+
+Probe identity dominates position by 20x. Pooling across probes therefore
+drowns the positional signal in difficulty differences. Re-analysed
+within-probe, mean eta-squared rises 0.031 -> 0.077 and the number of cells
+showing a significant effect goes from 1/35 to 7/34 -- against ~1.7 expected by
+chance at alpha=0.05. The same pairing logic that makes perplexity and McNemar
+comparisons sensitive (see harness/paired.py) applies here: cancel the dominant
+nuisance term before testing the effect of interest.
+
+Repetition explaining 0.000 confirms greedy decoding is exactly deterministic,
+so nothing is hidden by sampling noise.
 
 Why eta-squared rather than a correlation: positional effects are frequently
 NON-MONOTONIC -- the lost-in-the-middle U-shape is the canonical example. A
@@ -62,6 +81,7 @@ class CurveResult:
     position_means: dict[str, float] = field(default_factory=dict)
     n_perm: int = DEFAULT_PERM
     seed: int = DEFAULT_SEED
+    n_probes: int = 0
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -85,36 +105,61 @@ def _eta_squared(groups: list[list[float]]) -> float | None:
     return ss_between / ss_total
 
 
+def _within_probe_residuals(
+    observations: Sequence[tuple[str, float, float]],
+) -> list[tuple[float, float]]:
+    """Subtract each probe's own mean, leaving (position, residual) pairs.
+
+    This is what removes probe difficulty. A probe that is simply hard
+    contributes its hardness to its own mean, not to the positional signal."""
+    means: dict[str, list[float]] = {}
+    for pid, _pos, sc in observations:
+        means.setdefault(str(pid), []).append(float(sc))
+    mu = {k: sum(v) / len(v) for k, v in means.items()}
+    return [(float(pos), float(sc) - mu[str(pid)]) for pid, pos, sc in observations]
+
+
 def detect_curve(
-    observations: Sequence[tuple[float, float]],
+    observations: Sequence[tuple[str, float, float]],
     n_perm: int = DEFAULT_PERM,
     seed: int = DEFAULT_SEED,
     alpha: float = DEFAULT_ALPHA,
 ) -> CurveResult:
-    """observations: (position_percent, score) pairs for ONE dimension at ONE
-    context length. Repetitions appear as repeated positions."""
+    """observations: (probe_id, position_percent, score) for ONE dimension at
+    ONE context length. Repetitions appear as repeated (probe, position) pairs.
+
+    Probe difficulty is removed before testing; see the module docstring."""
+    n_probes = len({str(o[0]) for o in observations})
+    raw_by_pos: dict[float, list[float]] = {}
+    for _pid, pos, sc in observations:
+        raw_by_pos.setdefault(float(pos), []).append(float(sc))
+    centered = _within_probe_residuals(observations)
     by_pos: dict[float, list[float]] = {}
-    for pos, score in observations:
-        by_pos.setdefault(float(pos), []).append(float(score))
+    for pos, resid in centered:
+        by_pos.setdefault(float(pos), []).append(resid)
 
     n_obs = sum(len(v) for v in by_pos.values())
     positions = sorted(by_pos)
-    pos_means = {f"{p:.3f}": sum(by_pos[p]) / len(by_pos[p]) for p in positions}
-    mean_score = (sum(v for g in by_pos.values() for v in g) / n_obs) if n_obs else float("nan")
+    # Report RAW means per position -- the residual means are near zero by
+    # construction and would be useless for plotting a curve.
+    pos_means = {f"{p:.3f}": sum(raw_by_pos[p]) / len(raw_by_pos[p]) for p in positions}
+    mean_score = (
+        sum(v for g in raw_by_pos.values() for v in g) / n_obs if n_obs else float("nan")
+    )
 
     if len(positions) < 2:
         return CurveResult(False, 0.0, 1.0, "insufficient_positions",
-                           len(positions), n_obs, mean_score, pos_means, n_perm, seed)
+                           len(positions), n_obs, mean_score, pos_means, n_perm, seed, n_probes)
     if n_obs < 2 * len(positions):
         return CurveResult(False, 0.0, 1.0, "insufficient_observations",
-                           len(positions), n_obs, mean_score, pos_means, n_perm, seed)
+                           len(positions), n_obs, mean_score, pos_means, n_perm, seed, n_probes)
 
     groups = [by_pos[p] for p in positions]
     observed = _eta_squared(groups)
     if observed is None:
         # Ceiling or floor: no variance to explain. Explicitly NOT "no curve".
         return CurveResult(False, 0.0, 1.0, "no_variance",
-                           len(positions), n_obs, mean_score, pos_means, n_perm, seed)
+                           len(positions), n_obs, mean_score, pos_means, n_perm, seed, n_probes)
 
     flat = [v for g in groups for v in g]
     sizes = [len(g) for g in groups]
@@ -133,4 +178,4 @@ def detect_curve(
     p = (ge + 1) / (n_perm + 1)
     exists = p < alpha
     return CurveResult(exists, observed, p, "permutation_test",
-                       len(positions), n_obs, mean_score, pos_means, n_perm, seed)
+                       len(positions), n_obs, mean_score, pos_means, n_perm, seed, n_probes)
