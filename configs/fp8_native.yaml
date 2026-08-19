@@ -7,7 +7,13 @@ quant_scheme: "FP8-native"
 #   VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
 #   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B-FP8 \
 #     --gpu-memory-utilization 0.85 --max-model-len 8192 \
-#     --port 8000 --served-model-name model-under-test
+#     --port 8000 --served-model-name model-under-test \
+#     --reasoning-parser qwen3
+#   (--reasoning-parser is REQUIRED for the APEX pass: without it,
+#    Qwen3 <think> blocks reach APEX's scorers and destroy programmatic
+#    scoring. Pair it with no_think: true in the APEX model entry.
+#    See LANDMINES.md. It does not affect throughput -- the serving
+#    bench uses /v1/completions with ignore_eos.)
 # Checkpoint declares: fmt=e4m3, activation_scheme=dynamic, block 128x128.
 model: "Qwen3-8B"
 checkpoint: "/mnt/nvme4tb/llm_models/qwen/Qwen3-8B-FP8"

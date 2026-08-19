@@ -6,7 +6,13 @@ quant_scheme: "AWQ-4bit"
 #   VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
 #   vllm serve /mnt/nvme4tb/llm_models/qwen/Qwen3-8B-AWQ \
 #     --gpu-memory-utilization 0.85 --max-model-len 8192 \
-#     --port 8000 --served-model-name model-under-test
+#     --port 8000 --served-model-name model-under-test \
+#     --reasoning-parser qwen3
+#   (--reasoning-parser is REQUIRED for the APEX pass: without it,
+#    Qwen3 <think> blocks reach APEX's scorers and destroy programmatic
+#    scoring. Pair it with no_think: true in the APEX model entry.
+#    See LANDMINES.md. It does not affect throughput -- the serving
+#    bench uses /v1/completions with ignore_eos.)
 # VERIFIED on this box: vLLM 0.27.1 selects auto_awq -> MarlinLinearKernel,
 # 18.28 GiB KV cache (133,104 tokens).
 model: "Qwen3-8B"

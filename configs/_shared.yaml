@@ -79,11 +79,28 @@ apex:
   source: "/opt/apex/results.db"
   # model_id is set PER SCHEME -- one APEX database may hold all three arms.
   #
-  # NOTE for pass 1: salience probes and 15 of 20 application probes are
-  # rubric-scored and need an EVALUATOR model in the APEX config. Without one
-  # they run but store NULL scores, losing salience entirely. The evaluator must
-  # not be the model under test -- a quantized judge would degrade in lockstep
-  # with its subject.
+  # PASS 1 REQUIREMENTS (set these in the APEX config, not here):
+  #
+  #  a) EVALUATOR MODEL. Salience probes and 15 of 20 application probes are
+  #     rubric-scored. Without an evaluator they run but store NULL scores,
+  #     losing salience entirely. It must not be the model under test -- a
+  #     quantized judge degrades in lockstep with its subject. Established
+  #     setup here is llama-server on node2:
+  #         evaluator_models:
+  #           - name: <label>
+  #             backend: llamacpp
+  #             base_url: http://node2:8080
+  #     Verify and fingerprint it before and after the sweep:
+  #         python harness/check_evaluator.py --base-url http://node2:8080
+  #     A changed fingerprint means the judge moved mid-sweep and the
+  #     rubric-scored dimensions are no longer comparable across arms.
+  #
+  #  b) no_think: true on the model entry, AND --reasoning-parser qwen3 on the
+  #     vLLM launch. Neither alone is sufficient: with the parser alone the
+  #     model reasons until the token budget is gone and `content` is empty;
+  #     with /no_think alone the empty <think></think> prefix remains and
+  #     breaks starts_with/format_check. Measured impact of getting this wrong:
+  #     programmatic scores 0.332 vs 0.983 for exact_match. See LANDMINES.md.
   #
   # Curve-existence detection (harness/apex_curve.py). APEX does NOT report
   # curve_exists/curve_strength; they are derived from its per-position scores

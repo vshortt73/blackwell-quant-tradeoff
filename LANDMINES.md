@@ -112,6 +112,41 @@ flashinfer 0.6.16.post3        transformers 5.15.0
   measured result -- recorded only to show the path is not pathologically slow,
   which is how the emulated fallback presents).
 
+### NEW LANDMINE: Qwen3 reasoning tokens destroy APEX programmatic scoring
+- Environment: Qwen3-8B (any arm), vLLM 0.27.1, APEX 1.3.0.
+- Symptom: `application` (instruction_following) scores collapse. Measured on a
+  smoke run: `exact_match` probes averaged **0.983** while `programmatic`
+  probes averaged **0.332**, and **170 of 180** responses contained a
+  `<think>` block.
+- Root cause: Qwen3 emits reasoning by default, and APEX's scorers only
+  `.strip()` whitespace -- they never remove `<think>` blocks. So
+  `word_count`, `sentence_count`, `starts_with` and `format_check` score the
+  model's reasoning text instead of its answer.
+- Why it is dangerous rather than merely wrong: a quantized model may emit a
+  different *amount* of reasoning, which shifts these scores. The artefact
+  would be read as quantization damage to instruction-following.
+- Fix: BOTH of the following. Neither works alone.
+  1. `vllm serve ... --reasoning-parser qwen3` so `content` and `reasoning`
+     are separate fields, and
+  2. `no_think: true` on the model entry in the APEX config (APEX appends
+     `/no_think` to the system message).
+
+  Measured:
+
+  | configuration | content | reasoning |
+  |---|---|---|
+  | parser only, max_tokens=80  | **empty** | 361 chars |
+  | parser only, max_tokens=512 | **empty** | 2337 chars |
+  | `/no_think` only            | retains empty `<think></think>` prefix | -- |
+  | parser + `/no_think`        | **clean prose** | 2 chars |
+
+  With the parser alone the model reasons until the token budget is exhausted
+  and `content` stays empty -- scoring zero -- even at 512 tokens. With
+  `/no_think` alone the tags remain and `starts_with`/`format_check` still fail.
+- CONTROL NOTE: both settings must be IDENTICAL across all three arms. They
+  change what the scorer sees, so a difference between arms would be
+  indistinguishable from a quality difference.
+
 ### STILL UNVERIFIED on this box
 Do not treat these as cleared -- they were not exercised:
 - **Garbage-character output.** Not observed in AWQ or FP8 smoke tests, but the

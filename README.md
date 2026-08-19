@@ -104,12 +104,27 @@ LANDMINES.md    sm_120 serving field log
 
 ## What you must wire before running
 
-1. **An APEX run with an evaluator.** The importer is built
-   (`harness/run_apex_eval.py`), but pass 1 must produce all three dimensions.
-   Salience probes and 15 of 20 application probes are rubric-scored and need
-   an evaluator model in the APEX config; without one they run but store NULL
-   scores, so salience is lost entirely. The evaluator must **not** be the
-   model under test — a quantized judge degrades in lockstep with its subject.
+1. **An APEX run (pass 1) configured for all three dimensions.** The importer
+   is built (`harness/run_apex_eval.py`); pass 1 needs two things:
+
+   - **An evaluator model.** Salience probes and 15 of 20 application probes
+     are rubric-scored; without an evaluator they run but store NULL scores, so
+     salience is lost entirely. It must **not** be the model under test — a
+     quantized judge degrades in lockstep with its subject. Fingerprint it
+     before and after the sweep:
+
+     ```bash
+     python harness/check_evaluator.py --base-url http://node2:8080
+     ```
+
+     A changed fingerprint means the judge moved mid-sweep, and the
+     rubric-scored dimensions stop being comparable across arms.
+
+   - **Reasoning suppression**, via `--reasoning-parser qwen3` on the vLLM
+     launch *and* `no_think: true` on the APEX model entry. Neither works
+     alone. Getting this wrong is not a small error: programmatic scores
+     measured 0.332 against 0.983 for exact-match, because APEX's scorers see
+     `<think>` text instead of the answer. See `LANDMINES.md`.
 2. **Data** — `tasks.jsonl` is the last piece you must supply. One JSON object
    per line; see `data/tasks.example.jsonl`:
 
