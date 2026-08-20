@@ -1,0 +1,365 @@
+{
+  "run_kind": "serving",
+  "config_name": "bf16_baseline",
+  "quant_scheme": "BF16",
+  "model": "Qwen3-8B",
+  "metrics": {
+    "by_concurrency": [
+      {
+        "concurrency": 1,
+        "n_requests": 200,
+        "wall_seconds": 563.9118175888434,
+        "request_throughput_rps": 0.35466538164628963,
+        "output_token_throughput_tps": 90.79433770145015,
+        "tokens_per_joule": 0.24930115204756317,
+        "ttft_s": {
+          "p50": 0.05053590587340295,
+          "p90": 0.05558687997981906,
+          "p99": 0.0559537537349388
+        },
+        "tpot_s": {
+          "p50": 0.01085692635536486,
+          "p90": 0.010861969339277815,
+          "p99": 0.010869100373676594
+        },
+        "e2e_s": {
+          "p50": 2.8192783989943564,
+          "p90": 2.8246433046180757,
+          "p99": 2.8268121860548856
+        },
+        "telemetry": {
+          "available": true,
+          "n_samples": 2061,
+          "sample_interval_s": 0.25,
+          "power_w": {
+            "n": 2061,
+            "min": 354.34,
+            "mean": 364.19541969917515,
+            "p50": 363.97,
+            "p90": 366.19,
+            "max": 367.55,
+            "stdev": 1.7081851871660958
+          },
+          "clocks_sm_mhz": {
+            "n": 2061,
+            "min": 2392.0,
+            "mean": 2392.0,
+            "p50": 2392.0,
+            "p90": 2392.0,
+            "max": 2392.0,
+            "stdev": 0.0
+          },
+          "temperature_c": {
+            "n": 2061,
+            "min": 55.0,
+            "mean": 61.83697234352256,
+            "p50": 62.0,
+            "p90": 62.0,
+            "max": 65.0,
+            "stdev": 0.9004884941544784
+          },
+          "utilization_pct": {
+            "n": 2061,
+            "min": 94.0,
+            "mean": 99.83212032993693,
+            "p50": 100.0,
+            "p90": 100.0,
+            "max": 100.0,
+            "stdev": 0.8979770337315178
+          },
+          "memory_used_mib": {
+            "n": 2061,
+            "min": 29233.0,
+            "mean": 29233.0,
+            "p50": 29233.0,
+            "p90": 29233.0,
+            "max": 29233.0,
+            "stdev": 0.0
+          }
+        }
+      },
+      {
+        "concurrency": 4,
+        "n_requests": 200,
+        "wall_seconds": 158.4456309932284,
+        "request_throughput_rps": 1.2622626370085746,
+        "output_token_throughput_tps": 323.1392350741951,
+        "tokens_per_joule": 0.9879587557058557,
+        "ttft_s": {
+          "p50": 0.16823576320894063,
+          "p90": 0.17961767124943434,
+          "p99": 0.18136825615074487
+        },
+        "tpot_s": {
+          "p50": 0.011783137433596103,
+          "p90": 0.012219732076879226,
+          "p99": 0.012247580132958498
+        },
+        "e2e_s": {
+          "p50": 3.1752569212112576,
+          "p90": 3.186742872046307,
+          "p99": 3.188360556429252
+        },
+        "telemetry": {
+          "available": true,
+          "n_samples": 589,
+          "sample_interval_s": 0.25,
+          "power_w": {
+            "n": 589,
+            "min": 318.7,
+            "mean": 327.0776570458404,
+            "p50": 320.87,
+            "p90": 342.082,
+            "max": 345.12,
+            "stdev": 9.594243513807985
+          },
+          "clocks_sm_mhz": {
+            "n": 589,
+            "min": 2392.0,
+            "mean": 2392.0,
+            "p50": 2392.0,
+            "p90": 2392.0,
+            "max": 2392.0,
+            "stdev": 0.0
+          },
+          "temperature_c": {
+            "n": 589,
+            "min": 59.0,
+            "mean": 59.539898132427844,
+            "p50": 59.0,
+            "p90": 60.0,
+            "max": 66.0,
+            "stdev": 1.2211439388271854
+          },
+          "utilization_pct": {
+            "n": 589,
+            "min": 96.0,
+            "mean": 99.87096774193549,
+            "p50": 100.0,
+            "p90": 100.0,
+            "max": 100.0,
+            "stdev": 0.6305649343887112
+          },
+          "memory_used_mib": {
+            "n": 589,
+            "min": 29233.0,
+            "mean": 29233.0,
+            "p50": 29233.0,
+            "p90": 29233.0,
+            "max": 29233.0,
+            "stdev": 0.0
+          }
+        }
+      },
+      {
+        "concurrency": 16,
+        "n_requests": 200,
+        "wall_seconds": 49.58495383616537,
+        "request_throughput_rps": 4.033481621477837,
+        "output_token_throughput_tps": 1032.5712950983263,
+        "tokens_per_joule": 2.832840958753456,
+        "ttft_s": {
+          "p50": 0.34821806312538683,
+          "p90": 0.46189165371470153,
+          "p99": 0.6258005486242469
+        },
+        "tpot_s": {
+          "p50": 0.013717162964281205,
+          "p90": 0.01448421001087363,
+          "p99": 0.014943005091565497
+        },
+        "e2e_s": {
+          "p50": 3.8658141000196338,
+          "p90": 3.8993123574648054,
+          "p99": 4.059321403028443
+        },
+        "telemetry": {
+          "available": true,
+          "n_samples": 185,
+          "sample_interval_s": 0.25,
+          "power_w": {
+            "n": 185,
+            "min": 329.41,
+            "mean": 364.5002702702703,
+            "p50": 350.02,
+            "p90": 409.538,
+            "max": 425.95,
+            "stdev": 24.693482462851815
+          },
+          "clocks_sm_mhz": {
+            "n": 185,
+            "min": 2392.0,
+            "mean": 2392.0,
+            "p50": 2392.0,
+            "p90": 2392.0,
+            "max": 2392.0,
+            "stdev": 0.0
+          },
+          "temperature_c": {
+            "n": 185,
+            "min": 60.0,
+            "mean": 61.96756756756757,
+            "p50": 61.0,
+            "p90": 66.6,
+            "max": 67.0,
+            "stdev": 2.0345733404984583
+          },
+          "utilization_pct": {
+            "n": 185,
+            "min": 100.0,
+            "mean": 100.0,
+            "p50": 100.0,
+            "p90": 100.0,
+            "max": 100.0,
+            "stdev": 0.0
+          },
+          "memory_used_mib": {
+            "n": 185,
+            "min": 29233.0,
+            "mean": 29233.0,
+            "p50": 29233.0,
+            "p90": 29233.0,
+            "max": 29233.0,
+            "stdev": 0.0
+          }
+        }
+      },
+      {
+        "concurrency": 64,
+        "n_requests": 200,
+        "wall_seconds": 23.27330113016069,
+        "request_throughput_rps": 8.593538101082402,
+        "output_token_throughput_tps": 2199.945753877095,
+        "tokens_per_joule": 5.521934668977452,
+        "ttft_s": {
+          "p50": 0.6919794455170631,
+          "p90": 1.724690823070705,
+          "p99": 2.4203823573980476
+        },
+        "tpot_s": {
+          "p50": 0.023759817892649013,
+          "p90": 0.024737294503469388,
+          "p99": 0.025509751511664656
+        },
+        "e2e_s": {
+          "p50": 6.740898222895339,
+          "p90": 7.780795219168067,
+          "p99": 8.47720457097981
+        },
+        "telemetry": {
+          "available": true,
+          "n_samples": 87,
+          "sample_interval_s": 0.25,
+          "power_w": {
+            "n": 87,
+            "min": 330.49,
+            "mean": 398.4012643678161,
+            "p50": 382.8,
+            "p90": 448.394,
+            "max": 450.18,
+            "stdev": 36.26011201980394
+          },
+          "clocks_sm_mhz": {
+            "n": 87,
+            "min": 2377.0,
+            "mean": 2382.689655172414,
+            "p50": 2377.0,
+            "p90": 2392.0,
+            "max": 2392.0,
+            "stdev": 7.278231351450149
+          },
+          "temperature_c": {
+            "n": 87,
+            "min": 60.0,
+            "mean": 64.39080459770115,
+            "p50": 63.0,
+            "p90": 68.0,
+            "max": 68.0,
+            "stdev": 2.579121840387745
+          },
+          "utilization_pct": {
+            "n": 87,
+            "min": 100.0,
+            "mean": 100.0,
+            "p50": 100.0,
+            "p90": 100.0,
+            "max": 100.0,
+            "stdev": 0.0
+          },
+          "memory_used_mib": {
+            "n": 87,
+            "min": 29233.0,
+            "mean": 29233.0,
+            "p50": 29233.0,
+            "p90": 29233.0,
+            "max": 29233.0,
+            "stdev": 0.0
+          }
+        }
+      }
+    ],
+    "input_profile": "512in_256out_var64"
+  },
+  "notes": "Reference point. All retention/throughput deltas are relative to this.",
+  "declared_controls": {
+    "attention_backend": "FLASH_ATTN",
+    "use_deep_gemm": false,
+    "gpu_memory_utilization": 0.85,
+    "max_model_len": 12288,
+    "max_tokens": 256,
+    "ignore_eos": true,
+    "throughput_temperature": 0.0,
+    "input_profile": "512in_256out_var64",
+    "checkpoint": "/mnt/nvme4tb/llm_models/qwen/Qwen3-8B"
+  },
+  "run_id": "ec33f616cce8",
+  "created_at": "2026-08-19T21:51:04.354077+00:00",
+  "fingerprint": {
+    "captured_at": "2026-08-19T21:51:04.354087+00:00",
+    "hostname": "iris-desktop",
+    "nvidia_smi": {
+      "available": true,
+      "field_set": "full",
+      "gpus": [
+        {
+          "name": "NVIDIA GeForce RTX 5090",
+          "driver_version": "580.159.03",
+          "memory.total": "32607",
+          "memory.used": "29233",
+          "clocks.max.sm": "3090",
+          "clocks.sm": "2377",
+          "clocks.applications.gr": "[N/A]",
+          "power.limit": "500.00",
+          "power.draw": "331.61",
+          "temperature.gpu": "60",
+          "pstate": "P1",
+          "utilization.gpu": "100"
+        }
+      ]
+    },
+    "torch": {
+      "torch": "2.13.0+cu130",
+      "cuda_runtime": "13.0",
+      "cuda_available": true,
+      "compute_capability": "sm_120"
+    },
+    "backend_env": {
+      "VLLM_USE_FLASHINFER_SAMPLER": null,
+      "VLLM_ATTENTION_BACKEND": null,
+      "VLLM_USE_V1": null,
+      "CUDA_VISIBLE_DEVICES": null,
+      "CUDA_DEVICE_ORDER": null
+    },
+    "versions": {
+      "vllm": "0.27.1",
+      "transformers": "5.15.0",
+      "flashinfer": null,
+      "flashinfer-python": "0.6.16.post3",
+      "flash-attn": null,
+      "torch": "2.13.0",
+      "xformers": null
+    },
+    "git_commit": "aac78c7d9d174a1427c945023451a535205ddd4a",
+    "git_dirty": false
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "run_kind": "apex",
+  "config_name": "fp8_native",
+  "quant_scheme": "FP8-native",
+  "model": "Qwen3-8B",
+  "metrics": {
+    "dimensions": [
+      {
+        "dimension": "factual_recall",
+        "curve_exists": false,
+        "curve_strength": 0.0667291627381245,
+        "refusal_rate": 0.0,
+        "failure_rate": null,
+        "over_application_rate": null,
+        "extra": {
+          "apex_dimension": "factual_recall",
+          "apex_model_id": "qwen3-8b-fp8",
+          "headline_context_length": 8192,
+          "n_scored": 156,
+          "n_unscored": 0,
+          "per_context_length": {
+            "8192": {
+              "curve_exists": false,
+              "curve_strength": 0.0667291627381245,
+              "p_value": 0.5953404659534046,
+              "reason": "permutation_test",
+              "n_positions": 13,
+              "n_observations": 156,
+              "mean_score": 0.750249358974359,
+              "position_means": {
+                "0.020": 0.7082,
+                "0.050": 0.7597916666666666,
+                "0.100": 0.75265,
+                "0.200": 0.7672083333333334,
+                "0.300": 0.7407499999999999,
+                "0.400": 0.7201083333333332,
+                "0.500": 0.7248749999999999,
+                "0.600": 0.7783166666666667,
+                "0.700": 0.7986833333333334,
+                "0.800": 0.7637583333333334,
+                "0.900": 0.7153499999999999,
+                "0.950": 0.7597916666666666,
+                "0.980": 0.7637583333333334
+              },
+              "n_perm": 10000,
+              "seed": 20260819,
+              "n_probes": 6
+            }
+          },
+          "n_probes": 6,
+          "curve_detector": {
+            "method": "permutation test on within-probe eta-squared",
+            "n_perm": 10000,
+            "alpha": 0.05,
+            "seed": 20260819,
+            "p_value": 0.5953404659534046,
+            "reason": "permutation_test"
+          }
+        }
+      },
+      {
+        "dimension": "instruction_following",
+        "curve_exists": true,
+        "curve_strength": 0.06271458346311719,
+        "refusal_rate": 0.0,
+        "failure_rate": null,
+        "over_application_rate": null,
+        "extra": {
+          "apex_dimension": "application",
+          "apex_model_id": "qwen3-8b-fp8",
+          "headline_context_length": 8192,
+          "n_scored": 416,
+          "n_unscored": 0,
+          "per_context_length": {
+            "8192": {
+              "curve_exists": true,
+              "curve_strength": 0.06271458346311719,
+              "p_value": 0.0100989901009899,
+              "reason": "permutation_test",
+              "n_positions": 13,
+              "n_observations": 416,
+              "mean_score": 0.7890733173076924,
+              "position_means": {
+                "0.020": 0.806609375,
+                "0.050": 0.812859375,
+                "0.100": 0.789928125,
+                "0.200": 0.782934375,
+                "0.300": 0.77139375,
+                "0.400": 0.775359375,
+                "0.500": 0.773796875,
+                "0.600": 0.73076875,
+                "0.700": 0.78701875,
+                "0.800": 0.7917062500000001,
+                "0.900": 0.81983125,
+                "0.950": 0.802765625,
+                "0.980": 0.81298125
+              },
+              "n_perm": 10000,
+              "seed": 20260819,
+              "n_probes": 16
+            }
+          },
+          "n_probes": 16,
+          "curve_detector": {
+            "method": "permutation test on within-probe eta-squared",
+            "n_perm": 10000,
+            "alpha": 0.05,
+            "seed": 20260819,
+            "p_value": 0.0100989901009899,
+            "reason": "permutation_test"
+          }
+        }
+      },
+      {
+        "dimension": "salience",
+        "curve_exists": false,
+        "curve_strength": 0.048070377546211455,
+        "refusal_rate": 0.0,
+        "failure_rate": null,
+        "over_application_rate": null,
+        "extra": {
+          "apex_dimension": "salience",
+          "apex_model_id": "qwen3-8b-fp8",
+          "headline_context_length": 8192,
+          "n_scored": 156,
+          "n_unscored": 0,
+          "per_context_length": {
+            "8192": {
+              "curve_exists": false,
+              "curve_strength": 0.048070377546211455,
+              "p_value": 0.8344165583441656,
+              "reason": "permutation_test",
+              "n_positions": 13,
+              "n_observations": 156,
+              "mean_score": 0.5131410256410256,
+              "position_means": {
+                "0.020": 0.5166666666666667,
+                "0.050": 0.48333333333333334,
+                "0.100": 0.4666666666666666,
+                "0.200": 0.5,
+                "0.300": 0.5375,
+                "0.400": 0.5125000000000001,
+                "0.500": 0.5291666666666667,
+                "0.600": 0.48333333333333334,
+                "0.700": 0.5583333333333333,
+                "0.800": 0.5208333333333334,
+                "0.900": 0.5291666666666667,
+                "0.950": 0.5166666666666667,
+                "0.980": 0.5166666666666667
+              },
+              "n_perm": 10000,
+              "seed": 20260819,
+              "n_probes": 6
+            }
+          },
+          "n_probes": 6,
+          "curve_detector": {
+            "method": "permutation test on within-probe eta-squared",
+            "n_perm": 10000,
+            "alpha": 0.05,
+            "seed": 20260819,
+            "p_value": 0.8344165583441656,
+            "reason": "permutation_test"
+          }
+        }
+      }
+    ],
+    "apex_source": "results/apex/study.db",
+    "apex_model_id": "qwen3-8b-fp8"
+  },
+  "notes": "Quantize from the SAME base weights as BF16. Confirm native (not emulated) FP8 path in server logs.",
+  "declared_controls": {
+    "attention_backend": "FLASH_ATTN",
+    "use_deep_gemm": false,
+    "gpu_memory_utilization": 0.85,
+    "max_model_len": 12288,
+    "max_tokens": 256,
+    "ignore_eos": true,
+    "throughput_temperature": 0.0,
+    "input_profile": "512in_256out_var64",
+    "checkpoint": "/mnt/nvme4tb/llm_models/qwen/Qwen3-8B-FP8"
+  },
+  "run_id": "695fac3fb03c",
+  "created_at": "2026-08-20T00:22:45.766998+00:00",
+  "fingerprint": {
+    "captured_at": "2026-08-20T00:22:45.767011+00:00",
+    "hostname": "iris-desktop",
+    "nvidia_smi": {
+      "available": true,
+      "field_set": "full",
+      "gpus": [
+        {
+          "name": "NVIDIA GeForce RTX 5090",
+          "driver_version": "580.159.03",
+          "memory.total": "32607",
+          "memory.used": "603",
+          "clocks.max.sm": "3090",
+          "clocks.sm": "2392",
+          "clocks.applications.gr": "[N/A]",
+          "power.limit": "500.00",
+          "power.draw": "21.57",
+          "temperature.gpu": "46",
+          "pstate": "P5",
+          "utilization.gpu": "1"
+        }
+      ]
+    },
+    "torch": {
+      "torch": "2.13.0+cu130",
+      "cuda_runtime": "13.0",
+      "cuda_available": true,
+      "compute_capability": "sm_120"
+    },
+    "backend_env": {
+      "VLLM_USE_FLASHINFER_SAMPLER": null,
+      "VLLM_ATTENTION_BACKEND": null,
+      "VLLM_USE_V1": null,
+      "CUDA_VISIBLE_DEVICES": null,
+      "CUDA_DEVICE_ORDER": null
+    },
+    "versions": {
+      "vllm": "0.27.1",
+      "transformers": "5.15.0",
+      "flashinfer": null,
+      "flashinfer-python": "0.6.16.post3",
+      "flash-attn": null,
+      "torch": "2.13.0",
+      "xformers": null
+    },
+    "git_commit": "aac78c7d9d174a1427c945023451a535205ddd4a",
+    "git_dirty": true
+  }
+}

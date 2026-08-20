@@ -1,0 +1,1586 @@
+{
+  "run_kind": "quality",
+  "config_name": "fp8_native",
+  "quant_scheme": "FP8-native",
+  "model": "Qwen3-8B",
+  "metrics": {
+    "task_accuracy": {
+      "n": 50,
+      "correct": 46,
+      "accuracy": 0.92,
+      "grader_version": "1.1.0",
+      "rule_counts": {
+        "text_match": 34,
+        "no_match": 2,
+        "numeric_mismatch": 2,
+        "numeric_match": 11,
+        "alias_match": 1
+      },
+      "task_file": "data/tasks.jsonl",
+      "task_sha": "9d4003308bd71c7b",
+      "few_shot_sha": "75f4ae1566ef59d0",
+      "per_item": [
+        {
+          "i": 0,
+          "sha": "4e81fe7c9fd62c05",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 1,
+          "sha": "b4b17b2d22db039f",
+          "correct": false,
+          "rule": "no_match"
+        },
+        {
+          "i": 2,
+          "sha": "406dcf90581d6c0b",
+          "correct": false,
+          "rule": "no_match"
+        },
+        {
+          "i": 3,
+          "sha": "bee166d21aef24fb",
+          "correct": false,
+          "rule": "numeric_mismatch"
+        },
+        {
+          "i": 4,
+          "sha": "27a7f8a1663e1a3b",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 5,
+          "sha": "caf7403911ef28a6",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 6,
+          "sha": "2c15cbe8867e40a0",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 7,
+          "sha": "6d7175eda34f11e0",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 8,
+          "sha": "2a36bfd25f32d001",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 9,
+          "sha": "9e7ab301f394554d",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 10,
+          "sha": "97da549ce10040ff",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 11,
+          "sha": "d61153e3cd389881",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 12,
+          "sha": "fa00b92b7de09549",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 13,
+          "sha": "f86f6a5ced9d042a",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 14,
+          "sha": "c693d7f0675d4f27",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 15,
+          "sha": "ed289e14d888c18f",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 16,
+          "sha": "03ef4701b7cb1493",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 17,
+          "sha": "cbbc8ecb7a2bb289",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 18,
+          "sha": "1e33b19c8899cd19",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 19,
+          "sha": "395380a5ce0906ec",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 20,
+          "sha": "8b8afeb37d0f68d2",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 21,
+          "sha": "272c6253c2b0e36e",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 22,
+          "sha": "5fc128b7824595e5",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 23,
+          "sha": "0f2937e8c49aacbc",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 24,
+          "sha": "de5bac9be259004b",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 25,
+          "sha": "f470a492086531c9",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 26,
+          "sha": "753552dc8523d85c",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 27,
+          "sha": "5ccad54363ce57ba",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 28,
+          "sha": "f216a6882f57828a",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 29,
+          "sha": "dbaf66f9ab7fdd10",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 30,
+          "sha": "5fb918aea2e05592",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 31,
+          "sha": "603b3b5db650dd37",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 32,
+          "sha": "96f27f766791ce2f",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 33,
+          "sha": "a17a93767e8fee67",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 34,
+          "sha": "ec0d600e1788183c",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 35,
+          "sha": "0bddcac1922cc19b",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 36,
+          "sha": "32298db69831b529",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 37,
+          "sha": "463498df8236529f",
+          "correct": false,
+          "rule": "numeric_mismatch"
+        },
+        {
+          "i": 38,
+          "sha": "6cd74be43ab23a69",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 39,
+          "sha": "d46803afeeecf22e",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 40,
+          "sha": "58e84350bbee3e81",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 41,
+          "sha": "ce830196691aea7b",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 42,
+          "sha": "d2811b1fb214dcec",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 43,
+          "sha": "2b568e1dd7369d7d",
+          "correct": true,
+          "rule": "numeric_match"
+        },
+        {
+          "i": 44,
+          "sha": "f04c57222ddc520c",
+          "correct": true,
+          "rule": "alias_match"
+        },
+        {
+          "i": 45,
+          "sha": "2abac14d8a4c4a53",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 46,
+          "sha": "fd403c66249347e3",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 47,
+          "sha": "d8785c57bcc24405",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 48,
+          "sha": "a21f651290de405f",
+          "correct": true,
+          "rule": "text_match"
+        },
+        {
+          "i": 49,
+          "sha": "47982d5530cefe92",
+          "correct": true,
+          "rule": "numeric_match"
+        }
+      ]
+    },
+    "perplexity": {
+      "tokens_scored": 82282,
+      "mean_nll": 3.5970280639062424,
+      "perplexity": 36.48962829497146,
+      "corpus_file": "data/heldout_corpus.txt",
+      "corpus_sha": "576dd79fb3722f53",
+      "n_passages": 198,
+      "per_passage": [
+        {
+          "i": 0,
+          "sha": "23edac6585d21867",
+          "n_tokens": 394,
+          "sum_nll": 1382.0575980405565
+        },
+        {
+          "i": 1,
+          "sha": "d5b6d58af9945c5b",
+          "n_tokens": 390,
+          "sum_nll": 1118.3423391701447
+        },
+        {
+          "i": 2,
+          "sha": "bed772ffb7a78efa",
+          "n_tokens": 575,
+          "sum_nll": 1708.4284167493724
+        },
+        {
+          "i": 3,
+          "sha": "115e641daa276453",
+          "n_tokens": 383,
+          "sum_nll": 1656.686388304539
+        },
+        {
+          "i": 4,
+          "sha": "4adf752bae1aac77",
+          "n_tokens": 394,
+          "sum_nll": 1825.6240756930606
+        },
+        {
+          "i": 5,
+          "sha": "d7dd41ea0118af81",
+          "n_tokens": 460,
+          "sum_nll": 2114.211905099367
+        },
+        {
+          "i": 6,
+          "sha": "9fcf9676f6dea426",
+          "n_tokens": 391,
+          "sum_nll": 1716.5954081261286
+        },
+        {
+          "i": 7,
+          "sha": "203bfc760cbcedc9",
+          "n_tokens": 395,
+          "sum_nll": 1791.0148284850152
+        },
+        {
+          "i": 8,
+          "sha": "3a3f2a5109615b66",
+          "n_tokens": 392,
+          "sum_nll": 1577.218235093565
+        },
+        {
+          "i": 9,
+          "sha": "a4f70c21e3911173",
+          "n_tokens": 435,
+          "sum_nll": 1822.0765823987786
+        },
+        {
+          "i": 10,
+          "sha": "54cd3f0dea34d6cf",
+          "n_tokens": 400,
+          "sum_nll": 1537.8352022397823
+        },
+        {
+          "i": 11,
+          "sha": "151f9cb71676ef3d",
+          "n_tokens": 418,
+          "sum_nll": 1581.3780809644086
+        },
+        {
+          "i": 12,
+          "sha": "7e02873c790fafb3",
+          "n_tokens": 399,
+          "sum_nll": 1635.9745973450488
+        },
+        {
+          "i": 13,
+          "sha": "2550de67238f5ac4",
+          "n_tokens": 433,
+          "sum_nll": 1935.8993532735622
+        },
+        {
+          "i": 14,
+          "sha": "82693e5c2449f700",
+          "n_tokens": 508,
+          "sum_nll": 1692.186446148386
+        },
+        {
+          "i": 15,
+          "sha": "c3bb6b9b48c98450",
+          "n_tokens": 384,
+          "sum_nll": 1367.9789227594483
+        },
+        {
+          "i": 16,
+          "sha": "b88e322f64d7b29f",
+          "n_tokens": 390,
+          "sum_nll": 1207.3190590006648
+        },
+        {
+          "i": 17,
+          "sha": "2b0d60b39fa5ad56",
+          "n_tokens": 415,
+          "sum_nll": 1750.447105757914
+        },
+        {
+          "i": 18,
+          "sha": "544f44019aa79378",
+          "n_tokens": 399,
+          "sum_nll": 1323.2069349602498
+        },
+        {
+          "i": 19,
+          "sha": "febac85216d8a4a1",
+          "n_tokens": 501,
+          "sum_nll": 1818.5872940675404
+        },
+        {
+          "i": 20,
+          "sha": "dc1fd7c8199719ed",
+          "n_tokens": 410,
+          "sum_nll": 1465.829753154565
+        },
+        {
+          "i": 21,
+          "sha": "b6eaf59d45f35d39",
+          "n_tokens": 482,
+          "sum_nll": 1815.8133458002585
+        },
+        {
+          "i": 22,
+          "sha": "7d1abc1fc29e7842",
+          "n_tokens": 546,
+          "sum_nll": 2119.691192130485
+        },
+        {
+          "i": 23,
+          "sha": "f78ed5c0bc10d2d3",
+          "n_tokens": 414,
+          "sum_nll": 1655.7967122165037
+        },
+        {
+          "i": 24,
+          "sha": "ce1ef78d9e028fc2",
+          "n_tokens": 409,
+          "sum_nll": 1618.9602207894955
+        },
+        {
+          "i": 25,
+          "sha": "9885c1915cd34753",
+          "n_tokens": 395,
+          "sum_nll": 1782.005969342747
+        },
+        {
+          "i": 26,
+          "sha": "93b7026953b4135d",
+          "n_tokens": 404,
+          "sum_nll": 1482.944992376199
+        },
+        {
+          "i": 27,
+          "sha": "d6c9108bb3a0c88f",
+          "n_tokens": 412,
+          "sum_nll": 1571.6871836795342
+        },
+        {
+          "i": 28,
+          "sha": "f66f8ef0a5ddce4e",
+          "n_tokens": 530,
+          "sum_nll": 1906.4150482749274
+        },
+        {
+          "i": 29,
+          "sha": "2daeb7bb3e2a5981",
+          "n_tokens": 460,
+          "sum_nll": 1525.9555361933621
+        },
+        {
+          "i": 30,
+          "sha": "8a1fc07752849863",
+          "n_tokens": 386,
+          "sum_nll": 1391.78145266018
+        },
+        {
+          "i": 31,
+          "sha": "f485bc0d6c64da0a",
+          "n_tokens": 430,
+          "sum_nll": 1499.2910446039398
+        },
+        {
+          "i": 32,
+          "sha": "b224be5559cdaff3",
+          "n_tokens": 432,
+          "sum_nll": 1775.262125370019
+        },
+        {
+          "i": 33,
+          "sha": "337c09a71c28d0b1",
+          "n_tokens": 391,
+          "sum_nll": 1354.815899396228
+        },
+        {
+          "i": 34,
+          "sha": "8b25522b8cc833a0",
+          "n_tokens": 545,
+          "sum_nll": 2025.0565786517554
+        },
+        {
+          "i": 35,
+          "sha": "6bae0ccb06edc0a3",
+          "n_tokens": 395,
+          "sum_nll": 1665.4061843874626
+        },
+        {
+          "i": 36,
+          "sha": "60c9028f3a8a57eb",
+          "n_tokens": 390,
+          "sum_nll": 1627.1488646575506
+        },
+        {
+          "i": 37,
+          "sha": "18385eb674676cd4",
+          "n_tokens": 385,
+          "sum_nll": 1220.1121365697945
+        },
+        {
+          "i": 38,
+          "sha": "287aa8534fa695a9",
+          "n_tokens": 438,
+          "sum_nll": 1599.5709065607339
+        },
+        {
+          "i": 39,
+          "sha": "fd515dd3290ae59b",
+          "n_tokens": 388,
+          "sum_nll": 1629.935159507028
+        },
+        {
+          "i": 40,
+          "sha": "455f8b5a10670ffa",
+          "n_tokens": 383,
+          "sum_nll": 1554.5707596990724
+        },
+        {
+          "i": 41,
+          "sha": "0b5219241bb28218",
+          "n_tokens": 522,
+          "sum_nll": 2109.471117619176
+        },
+        {
+          "i": 42,
+          "sha": "1249a65427607f78",
+          "n_tokens": 634,
+          "sum_nll": 2498.4275632793783
+        },
+        {
+          "i": 43,
+          "sha": "9b3a360b0f0c1ec7",
+          "n_tokens": 397,
+          "sum_nll": 1691.6301109712695
+        },
+        {
+          "i": 44,
+          "sha": "da585be4138d57a0",
+          "n_tokens": 494,
+          "sum_nll": 2129.1832549109968
+        },
+        {
+          "i": 45,
+          "sha": "14bc7d22f28a8e38",
+          "n_tokens": 395,
+          "sum_nll": 1545.3969778085532
+        },
+        {
+          "i": 46,
+          "sha": "2ce37694dfe0544e",
+          "n_tokens": 454,
+          "sum_nll": 1616.3116958968703
+        },
+        {
+          "i": 47,
+          "sha": "4f7227617beed65f",
+          "n_tokens": 755,
+          "sum_nll": 2881.3752549231867
+        },
+        {
+          "i": 48,
+          "sha": "59f6ebd6adfed021",
+          "n_tokens": 389,
+          "sum_nll": 1047.5203796374908
+        },
+        {
+          "i": 49,
+          "sha": "f7333a60500dc034",
+          "n_tokens": 389,
+          "sum_nll": 1244.7841908697837
+        },
+        {
+          "i": 50,
+          "sha": "e268d88bdd51058c",
+          "n_tokens": 384,
+          "sum_nll": 1313.9972058442045
+        },
+        {
+          "i": 51,
+          "sha": "a95764fd1df90b41",
+          "n_tokens": 329,
+          "sum_nll": 1278.5699882790277
+        },
+        {
+          "i": 52,
+          "sha": "fafe5c4b013de1d6",
+          "n_tokens": 391,
+          "sum_nll": 1440.3806431326875
+        },
+        {
+          "i": 53,
+          "sha": "734fde2b6a8a3840",
+          "n_tokens": 383,
+          "sum_nll": 1103.944459100454
+        },
+        {
+          "i": 54,
+          "sha": "75eaa2bd3440c866",
+          "n_tokens": 411,
+          "sum_nll": 1103.5068510661213
+        },
+        {
+          "i": 55,
+          "sha": "103b9ad1e433a72e",
+          "n_tokens": 390,
+          "sum_nll": 1251.4434997477044
+        },
+        {
+          "i": 56,
+          "sha": "554bb9aa30ab1c5c",
+          "n_tokens": 396,
+          "sum_nll": 1357.0142137740197
+        },
+        {
+          "i": 57,
+          "sha": "2863cb4fa5b9373f",
+          "n_tokens": 388,
+          "sum_nll": 1526.1915891627946
+        },
+        {
+          "i": 58,
+          "sha": "c573707a6d06a2b6",
+          "n_tokens": 422,
+          "sum_nll": 1482.214213627383
+        },
+        {
+          "i": 59,
+          "sha": "b42a518bbed146e4",
+          "n_tokens": 414,
+          "sum_nll": 1657.195205772864
+        },
+        {
+          "i": 60,
+          "sha": "1f4e5b65d75e2d9c",
+          "n_tokens": 527,
+          "sum_nll": 2081.4351236940183
+        },
+        {
+          "i": 61,
+          "sha": "6dd51363afefc8d5",
+          "n_tokens": 404,
+          "sum_nll": 1740.500312774034
+        },
+        {
+          "i": 62,
+          "sha": "cbff06ac2ec870df",
+          "n_tokens": 383,
+          "sum_nll": 1737.7335568051271
+        },
+        {
+          "i": 63,
+          "sha": "ade4f0ca130cdfff",
+          "n_tokens": 386,
+          "sum_nll": 1299.11120509875
+        },
+        {
+          "i": 64,
+          "sha": "3000a2f9a8852b1b",
+          "n_tokens": 235,
+          "sum_nll": 306.23346922548285
+        },
+        {
+          "i": 65,
+          "sha": "a107c923bc63d206",
+          "n_tokens": 450,
+          "sum_nll": 1988.5690549987248
+        },
+        {
+          "i": 66,
+          "sha": "6310dc0ba4dba476",
+          "n_tokens": 391,
+          "sum_nll": 1827.8363807577598
+        },
+        {
+          "i": 67,
+          "sha": "732c900f448f948d",
+          "n_tokens": 385,
+          "sum_nll": 1624.9196848361075
+        },
+        {
+          "i": 68,
+          "sha": "92922011af068a9d",
+          "n_tokens": 398,
+          "sum_nll": 1753.8941067459957
+        },
+        {
+          "i": 69,
+          "sha": "afe0a1112fd9f34a",
+          "n_tokens": 417,
+          "sum_nll": 1915.26282990256
+        },
+        {
+          "i": 70,
+          "sha": "40d192ad7ad14222",
+          "n_tokens": 391,
+          "sum_nll": 1851.8100853787091
+        },
+        {
+          "i": 71,
+          "sha": "4049ff8de590a105",
+          "n_tokens": 400,
+          "sum_nll": 1659.9152761681835
+        },
+        {
+          "i": 72,
+          "sha": "ba6267aef19688e2",
+          "n_tokens": 416,
+          "sum_nll": 1818.513812060431
+        },
+        {
+          "i": 73,
+          "sha": "8dc9b20b07572972",
+          "n_tokens": 383,
+          "sum_nll": 1493.9971834157232
+        },
+        {
+          "i": 74,
+          "sha": "2e0411b660c032d7",
+          "n_tokens": 384,
+          "sum_nll": 1401.2303184426123
+        },
+        {
+          "i": 75,
+          "sha": "0ec8e55048f3cfc2",
+          "n_tokens": 412,
+          "sum_nll": 1880.2838558162039
+        },
+        {
+          "i": 76,
+          "sha": "c2d92cf7a4f046e7",
+          "n_tokens": 394,
+          "sum_nll": 1688.3660918658898
+        },
+        {
+          "i": 77,
+          "sha": "3d8f36af45ac08f8",
+          "n_tokens": 432,
+          "sum_nll": 1818.9274132848705
+        },
+        {
+          "i": 78,
+          "sha": "3980c089cc8c09d5",
+          "n_tokens": 408,
+          "sum_nll": 1791.1462555340906
+        },
+        {
+          "i": 79,
+          "sha": "2ad4ad64f473e61a",
+          "n_tokens": 407,
+          "sum_nll": 1903.402604914816
+        },
+        {
+          "i": 80,
+          "sha": "6a8b03499bc44136",
+          "n_tokens": 385,
+          "sum_nll": 1898.8570782622555
+        },
+        {
+          "i": 81,
+          "sha": "66c897c6e6944aef",
+          "n_tokens": 400,
+          "sum_nll": 1944.7724707767284
+        },
+        {
+          "i": 82,
+          "sha": "847c0ada2313c053",
+          "n_tokens": 388,
+          "sum_nll": 1146.7685090662712
+        },
+        {
+          "i": 83,
+          "sha": "19548ec815ee40e3",
+          "n_tokens": 386,
+          "sum_nll": 1449.3912981939934
+        },
+        {
+          "i": 84,
+          "sha": "37e331dc1cb3f5b5",
+          "n_tokens": 384,
+          "sum_nll": 1429.1583698198701
+        },
+        {
+          "i": 85,
+          "sha": "122362e822762855",
+          "n_tokens": 385,
+          "sum_nll": 1312.1403236817669
+        },
+        {
+          "i": 86,
+          "sha": "00c03b8d37ac7d7f",
+          "n_tokens": 387,
+          "sum_nll": 1335.2348636390047
+        },
+        {
+          "i": 87,
+          "sha": "25bbd478e833fb07",
+          "n_tokens": 407,
+          "sum_nll": 1294.7267474057032
+        },
+        {
+          "i": 88,
+          "sha": "1396b1cee0b0cf75",
+          "n_tokens": 386,
+          "sum_nll": 1349.5273160375546
+        },
+        {
+          "i": 89,
+          "sha": "0e3ec345b3191e10",
+          "n_tokens": 386,
+          "sum_nll": 1257.5695268708553
+        },
+        {
+          "i": 90,
+          "sha": "85fefbe91740bf2b",
+          "n_tokens": 469,
+          "sum_nll": 1499.7261556106655
+        },
+        {
+          "i": 91,
+          "sha": "18291c0ac2a26b79",
+          "n_tokens": 243,
+          "sum_nll": 1080.536628395139
+        },
+        {
+          "i": 92,
+          "sha": "ac0dc1f2657ccb92",
+          "n_tokens": 345,
+          "sum_nll": 1398.5018244087394
+        },
+        {
+          "i": 93,
+          "sha": "e5f56426df2a6c03",
+          "n_tokens": 389,
+          "sum_nll": 1524.3016653565126
+        },
+        {
+          "i": 94,
+          "sha": "43115b3e2ca94b59",
+          "n_tokens": 393,
+          "sum_nll": 1685.5143426944549
+        },
+        {
+          "i": 95,
+          "sha": "e0e13b11e6c47d11",
+          "n_tokens": 385,
+          "sum_nll": 1584.3222772085574
+        },
+        {
+          "i": 96,
+          "sha": "f67218316e571750",
+          "n_tokens": 387,
+          "sum_nll": 1373.6876597151231
+        },
+        {
+          "i": 97,
+          "sha": "b3c5d9dc290e7470",
+          "n_tokens": 451,
+          "sum_nll": 1897.1128853656605
+        },
+        {
+          "i": 98,
+          "sha": "47ae1e884e394533",
+          "n_tokens": 398,
+          "sum_nll": 1329.1547092331882
+        },
+        {
+          "i": 99,
+          "sha": "60e119068387d6c4",
+          "n_tokens": 511,
+          "sum_nll": 1841.6577539067932
+        },
+        {
+          "i": 100,
+          "sha": "719f201d9b35a3fa",
+          "n_tokens": 392,
+          "sum_nll": 1573.5432816843827
+        },
+        {
+          "i": 101,
+          "sha": "e9eb873a6384a904",
+          "n_tokens": 434,
+          "sum_nll": 1701.2594358399845
+        },
+        {
+          "i": 102,
+          "sha": "0f53ff94dd63467d",
+          "n_tokens": 395,
+          "sum_nll": 1302.2135846574745
+        },
+        {
+          "i": 103,
+          "sha": "cea2f9df38584f93",
+          "n_tokens": 389,
+          "sum_nll": 1411.104272098325
+        },
+        {
+          "i": 104,
+          "sha": "386eb5499a32e03e",
+          "n_tokens": 530,
+          "sum_nll": 2046.3266582043543
+        },
+        {
+          "i": 105,
+          "sha": "17379bb9abef29da",
+          "n_tokens": 346,
+          "sum_nll": 1359.1239996847771
+        },
+        {
+          "i": 106,
+          "sha": "d139face50731897",
+          "n_tokens": 419,
+          "sum_nll": 1493.4044344950805
+        },
+        {
+          "i": 107,
+          "sha": "fe5dadc565dc29c2",
+          "n_tokens": 395,
+          "sum_nll": 1478.992403677104
+        },
+        {
+          "i": 108,
+          "sha": "79f1f65c28adf3a0",
+          "n_tokens": 351,
+          "sum_nll": 1623.561539517617
+        },
+        {
+          "i": 109,
+          "sha": "d3a9724f11af1039",
+          "n_tokens": 413,
+          "sum_nll": 1479.7081660207295
+        },
+        {
+          "i": 110,
+          "sha": "38c25e4fa7077126",
+          "n_tokens": 359,
+          "sum_nll": 1452.0161897772734
+        },
+        {
+          "i": 111,
+          "sha": "047c4c9040d1e107",
+          "n_tokens": 578,
+          "sum_nll": 1988.9018031103524
+        },
+        {
+          "i": 112,
+          "sha": "15fbbfdb4bedc3cc",
+          "n_tokens": 576,
+          "sum_nll": 2193.8414525485673
+        },
+        {
+          "i": 113,
+          "sha": "0391345aee878978",
+          "n_tokens": 222,
+          "sum_nll": 963.0867995989124
+        },
+        {
+          "i": 114,
+          "sha": "2be0d7dfa16e5062",
+          "n_tokens": 391,
+          "sum_nll": 790.6400841880334
+        },
+        {
+          "i": 115,
+          "sha": "efeb7095d15841ff",
+          "n_tokens": 383,
+          "sum_nll": 721.1423306924179
+        },
+        {
+          "i": 116,
+          "sha": "0e2d7956e4150c2b",
+          "n_tokens": 500,
+          "sum_nll": 1240.9228279748413
+        },
+        {
+          "i": 117,
+          "sha": "0370961a13e834f9",
+          "n_tokens": 392,
+          "sum_nll": 874.32007277294
+        },
+        {
+          "i": 118,
+          "sha": "6cd158a8f0906548",
+          "n_tokens": 395,
+          "sum_nll": 712.1109859359117
+        },
+        {
+          "i": 119,
+          "sha": "313c941b7c6ee725",
+          "n_tokens": 392,
+          "sum_nll": 842.9284323523567
+        },
+        {
+          "i": 120,
+          "sha": "f00d2369f8f5be38",
+          "n_tokens": 390,
+          "sum_nll": 915.3120694607871
+        },
+        {
+          "i": 121,
+          "sha": "754cc0a3939ffe57",
+          "n_tokens": 365,
+          "sum_nll": 947.9354414916547
+        },
+        {
+          "i": 122,
+          "sha": "9e041c721acded9f",
+          "n_tokens": 403,
+          "sum_nll": 1389.213584135096
+        },
+        {
+          "i": 123,
+          "sha": "e5bf255b454eb376",
+          "n_tokens": 402,
+          "sum_nll": 1479.9941744405744
+        },
+        {
+          "i": 124,
+          "sha": "6cb7a821b9e61493",
+          "n_tokens": 406,
+          "sum_nll": 1575.8071269630418
+        },
+        {
+          "i": 125,
+          "sha": "6fac72fe34d4e405",
+          "n_tokens": 538,
+          "sum_nll": 2323.1482367201916
+        },
+        {
+          "i": 126,
+          "sha": "28c92d2a0ee326ca",
+          "n_tokens": 413,
+          "sum_nll": 1727.0674365526502
+        },
+        {
+          "i": 127,
+          "sha": "369e653c90db7273",
+          "n_tokens": 396,
+          "sum_nll": 1389.5636804557416
+        },
+        {
+          "i": 128,
+          "sha": "89d4a61b77a249e8",
+          "n_tokens": 385,
+          "sum_nll": 1550.0666300975445
+        },
+        {
+          "i": 129,
+          "sha": "f55eafb6ee60dfb8",
+          "n_tokens": 393,
+          "sum_nll": 1650.6906564193323
+        },
+        {
+          "i": 130,
+          "sha": "40a9ad59f1900308",
+          "n_tokens": 370,
+          "sum_nll": 1296.6722454436494
+        },
+        {
+          "i": 131,
+          "sha": "4a9c2135dd7357ed",
+          "n_tokens": 352,
+          "sum_nll": 1256.9633944754937
+        },
+        {
+          "i": 132,
+          "sha": "0556488d3a04d962",
+          "n_tokens": 393,
+          "sum_nll": 1667.8191282796365
+        },
+        {
+          "i": 133,
+          "sha": "151b413df56d6eb7",
+          "n_tokens": 365,
+          "sum_nll": 1429.2968044891431
+        },
+        {
+          "i": 134,
+          "sha": "045a3c4e622faf87",
+          "n_tokens": 408,
+          "sum_nll": 1321.3708515613926
+        },
+        {
+          "i": 135,
+          "sha": "4fddc8b2f3bcee41",
+          "n_tokens": 388,
+          "sum_nll": 1320.023045003754
+        },
+        {
+          "i": 136,
+          "sha": "bbf9da0ffe5f96e0",
+          "n_tokens": 388,
+          "sum_nll": 1157.1497829476718
+        },
+        {
+          "i": 137,
+          "sha": "12489bb14dbafdf7",
+          "n_tokens": 446,
+          "sum_nll": 1590.4187951857543
+        },
+        {
+          "i": 138,
+          "sha": "f9781b64d467b88c",
+          "n_tokens": 288,
+          "sum_nll": 1124.2532920270482
+        },
+        {
+          "i": 139,
+          "sha": "85ccc873ecf3f62b",
+          "n_tokens": 404,
+          "sum_nll": 1558.0992657465576
+        },
+        {
+          "i": 140,
+          "sha": "370ee9036d0773d4",
+          "n_tokens": 461,
+          "sum_nll": 1409.7087430921301
+        },
+        {
+          "i": 141,
+          "sha": "037d13deb54f2eb5",
+          "n_tokens": 431,
+          "sum_nll": 1708.0948204934002
+        },
+        {
+          "i": 142,
+          "sha": "0a669486b26ffc00",
+          "n_tokens": 343,
+          "sum_nll": 1303.9185250326746
+        },
+        {
+          "i": 143,
+          "sha": "01f0c0875ea20d2c",
+          "n_tokens": 403,
+          "sum_nll": 1532.5077208329274
+        },
+        {
+          "i": 144,
+          "sha": "01765c8e38fb1cb3",
+          "n_tokens": 424,
+          "sum_nll": 1827.6367264788014
+        },
+        {
+          "i": 145,
+          "sha": "8576226d4621cef9",
+          "n_tokens": 405,
+          "sum_nll": 1925.6383073610768
+        },
+        {
+          "i": 146,
+          "sha": "46e0644cd35286cc",
+          "n_tokens": 415,
+          "sum_nll": 1845.941687316877
+        },
+        {
+          "i": 147,
+          "sha": "095d6811228cd848",
+          "n_tokens": 402,
+          "sum_nll": 1968.4785527901477
+        },
+        {
+          "i": 148,
+          "sha": "6c9e52123f4b1f93",
+          "n_tokens": 400,
+          "sum_nll": 1106.4466816065674
+        },
+        {
+          "i": 149,
+          "sha": "be2305c424951e2a",
+          "n_tokens": 385,
+          "sum_nll": 1157.531379638364
+        },
+        {
+          "i": 150,
+          "sha": "bcd19229b15b08ae",
+          "n_tokens": 484,
+          "sum_nll": 1464.244330083633
+        },
+        {
+          "i": 151,
+          "sha": "595ef2ecfb1cf92b",
+          "n_tokens": 394,
+          "sum_nll": 1388.0827657615503
+        },
+        {
+          "i": 152,
+          "sha": "768c11fc22608cea",
+          "n_tokens": 388,
+          "sum_nll": 1088.4946700334765
+        },
+        {
+          "i": 153,
+          "sha": "30729885a43c0e31",
+          "n_tokens": 418,
+          "sum_nll": 1234.9078230650812
+        },
+        {
+          "i": 154,
+          "sha": "dc6864c0a37a9c01",
+          "n_tokens": 379,
+          "sum_nll": 1350.762969782495
+        },
+        {
+          "i": 155,
+          "sha": "68f572e5a6c19f96",
+          "n_tokens": 394,
+          "sum_nll": 1074.0824706528292
+        },
+        {
+          "i": 156,
+          "sha": "b18960a4747b1069",
+          "n_tokens": 383,
+          "sum_nll": 1072.6380876560042
+        },
+        {
+          "i": 157,
+          "sha": "cbd2cfac77118393",
+          "n_tokens": 388,
+          "sum_nll": 1373.0177382356824
+        },
+        {
+          "i": 158,
+          "sha": "25833aff2b9bbbd7",
+          "n_tokens": 398,
+          "sum_nll": 1129.4616288140137
+        },
+        {
+          "i": 159,
+          "sha": "7a0eb814776eb2d2",
+          "n_tokens": 389,
+          "sum_nll": 1094.810216695439
+        },
+        {
+          "i": 160,
+          "sha": "ca6849b067d224f8",
+          "n_tokens": 383,
+          "sum_nll": 1165.269784593897
+        },
+        {
+          "i": 161,
+          "sha": "14b7202b8035d8d7",
+          "n_tokens": 532,
+          "sum_nll": 1575.3514669850924
+        },
+        {
+          "i": 162,
+          "sha": "867f2997f79a25fa",
+          "n_tokens": 391,
+          "sum_nll": 1317.9917082831898
+        },
+        {
+          "i": 163,
+          "sha": "a3fe9fcd4f96aece",
+          "n_tokens": 394,
+          "sum_nll": 1160.9376566927647
+        },
+        {
+          "i": 164,
+          "sha": "83fb2b9ede03f460",
+          "n_tokens": 401,
+          "sum_nll": 1234.2914917184278
+        },
+        {
+          "i": 165,
+          "sha": "b4f3d42cdb7f98c4",
+          "n_tokens": 394,
+          "sum_nll": 1310.0413989664337
+        },
+        {
+          "i": 166,
+          "sha": "de4432d49deb8a02",
+          "n_tokens": 609,
+          "sum_nll": 1874.999299640245
+        },
+        {
+          "i": 167,
+          "sha": "de6ad5936bec24b4",
+          "n_tokens": 459,
+          "sum_nll": 1475.7769856591074
+        },
+        {
+          "i": 168,
+          "sha": "c9d94b6ed5db9206",
+          "n_tokens": 392,
+          "sum_nll": 1231.585101490356
+        },
+        {
+          "i": 169,
+          "sha": "2b43773342059641",
+          "n_tokens": 529,
+          "sum_nll": 1399.9705929720776
+        },
+        {
+          "i": 170,
+          "sha": "968540832d5fd10e",
+          "n_tokens": 580,
+          "sum_nll": 1366.0199820865878
+        },
+        {
+          "i": 171,
+          "sha": "beaf5edab8062250",
+          "n_tokens": 415,
+          "sum_nll": 1187.7932886181832
+        },
+        {
+          "i": 172,
+          "sha": "c0e4a33c1ee41033",
+          "n_tokens": 390,
+          "sum_nll": 1201.1532442735183
+        },
+        {
+          "i": 173,
+          "sha": "f0efd5b188537ef7",
+          "n_tokens": 515,
+          "sum_nll": 1617.206987529321
+        },
+        {
+          "i": 174,
+          "sha": "fb625d4ce4c77f79",
+          "n_tokens": 400,
+          "sum_nll": 1152.2241553943381
+        },
+        {
+          "i": 175,
+          "sha": "7bfa5d62f603c2cd",
+          "n_tokens": 397,
+          "sum_nll": 1255.5514057558555
+        },
+        {
+          "i": 176,
+          "sha": "c0dbc8266ba62f50",
+          "n_tokens": 406,
+          "sum_nll": 1294.5206768082587
+        },
+        {
+          "i": 177,
+          "sha": "90031be1d8925b2b",
+          "n_tokens": 387,
+          "sum_nll": 1508.8665136964657
+        },
+        {
+          "i": 178,
+          "sha": "d1c9e2f3f670f9a2",
+          "n_tokens": 387,
+          "sum_nll": 1425.785271096487
+        },
+        {
+          "i": 179,
+          "sha": "f409d061d387e2be",
+          "n_tokens": 396,
+          "sum_nll": 1612.6254233197478
+        },
+        {
+          "i": 180,
+          "sha": "99fe4739c22cf417",
+          "n_tokens": 645,
+          "sum_nll": 1846.3044637171968
+        },
+        {
+          "i": 181,
+          "sha": "e993363d4bc057fc",
+          "n_tokens": 388,
+          "sum_nll": 1230.1456843762767
+        },
+        {
+          "i": 182,
+          "sha": "206f0e53714e90c7",
+          "n_tokens": 389,
+          "sum_nll": 1241.6580432875153
+        },
+        {
+          "i": 183,
+          "sha": "f127421c325ea4dd",
+          "n_tokens": 444,
+          "sum_nll": 1367.4444547369267
+        },
+        {
+          "i": 184,
+          "sha": "97211e49e4a5a8ef",
+          "n_tokens": 445,
+          "sum_nll": 1681.1816396195743
+        },
+        {
+          "i": 185,
+          "sha": "86c9140a3bfd2953",
+          "n_tokens": 403,
+          "sum_nll": 961.8685599252699
+        },
+        {
+          "i": 186,
+          "sha": "c348d7b5fc98a389",
+          "n_tokens": 384,
+          "sum_nll": 1233.3695434188687
+        },
+        {
+          "i": 187,
+          "sha": "99bf0c2a7b23d59d",
+          "n_tokens": 534,
+          "sum_nll": 1617.5715855100418
+        },
+        {
+          "i": 188,
+          "sha": "2695b1d045ec4609",
+          "n_tokens": 537,
+          "sum_nll": 2005.1619939663133
+        },
+        {
+          "i": 189,
+          "sha": "6c0803845174be3e",
+          "n_tokens": 265,
+          "sum_nll": 878.2223306238004
+        },
+        {
+          "i": 190,
+          "sha": "e5d4cceea4304c73",
+          "n_tokens": 385,
+          "sum_nll": 1181.5976750359387
+        },
+        {
+          "i": 191,
+          "sha": "9fc60f0f6ed7b354",
+          "n_tokens": 423,
+          "sum_nll": 1425.897667417191
+        },
+        {
+          "i": 192,
+          "sha": "5b8ac4117094ed29",
+          "n_tokens": 450,
+          "sum_nll": 1589.8510647572416
+        },
+        {
+          "i": 193,
+          "sha": "e1feb0d02f3838d5",
+          "n_tokens": 252,
+          "sum_nll": 1012.5780653322727
+        },
+        {
+          "i": 194,
+          "sha": "4662c664f30b6cd9",
+          "n_tokens": 387,
+          "sum_nll": 1130.7478770870257
+        },
+        {
+          "i": 195,
+          "sha": "c90c0c71f3765d28",
+          "n_tokens": 475,
+          "sum_nll": 1430.6360964545115
+        },
+        {
+          "i": 196,
+          "sha": "d7a5f8533d3eee3e",
+          "n_tokens": 389,
+          "sum_nll": 1114.5058547062836
+        },
+        {
+          "i": 197,
+          "sha": "22e18ef5679160ec",
+          "n_tokens": 415,
+          "sum_nll": 1332.1085941373751
+        }
+      ]
+    }
+  },
+  "notes": "Quantize from the SAME base weights as BF16. Confirm native (not emulated) FP8 path in server logs.",
+  "declared_controls": {
+    "attention_backend": "FLASH_ATTN",
+    "use_deep_gemm": false,
+    "gpu_memory_utilization": 0.85,
+    "max_model_len": 12288,
+    "max_tokens": 256,
+    "ignore_eos": true,
+    "throughput_temperature": 0.0,
+    "input_profile": "512in_256out_var64",
+    "checkpoint": "/mnt/nvme4tb/llm_models/qwen/Qwen3-8B-FP8"
+  },
+  "run_id": "53d0dbc00a47",
+  "created_at": "2026-08-19T22:58:33.039500+00:00",
+  "fingerprint": {
+    "captured_at": "2026-08-19T22:58:33.039514+00:00",
+    "hostname": "iris-desktop",
+    "nvidia_smi": {
+      "available": true,
+      "field_set": "full",
+      "gpus": [
+        {
+          "name": "NVIDIA GeForce RTX 5090",
+          "driver_version": "580.159.03",
+          "memory.total": "32607",
+          "memory.used": "27025",
+          "clocks.max.sm": "3090",
+          "clocks.sm": "2340",
+          "clocks.applications.gr": "[N/A]",
+          "power.limit": "500.00",
+          "power.draw": "319.66",
+          "temperature.gpu": "61",
+          "pstate": "P1",
+          "utilization.gpu": "75"
+        }
+      ]
+    },
+    "torch": {
+      "torch": "2.13.0+cu130",
+      "cuda_runtime": "13.0",
+      "cuda_available": true,
+      "compute_capability": "sm_120"
+    },
+    "backend_env": {
+      "VLLM_USE_FLASHINFER_SAMPLER": null,
+      "VLLM_ATTENTION_BACKEND": null,
+      "VLLM_USE_V1": null,
+      "CUDA_VISIBLE_DEVICES": null,
+      "CUDA_DEVICE_ORDER": null
+    },
+    "versions": {
+      "vllm": "0.27.1",
+      "transformers": "5.15.0",
+      "flashinfer": null,
+      "flashinfer-python": "0.6.16.post3",
+      "flash-attn": null,
+      "torch": "2.13.0",
+      "xformers": null
+    },
+    "git_commit": "aac78c7d9d174a1427c945023451a535205ddd4a",
+    "git_dirty": true
+  }
+}
