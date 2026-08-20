@@ -66,12 +66,12 @@ the result are restated here.
 
 **Experimental matrix.**
 
-| | |
-|---|---|
-| Independent variable | quantization scheme: BF16 / FP8-native / AWQ-4bit |
-| Model | Qwen3-8B, three official checkpoints from the same base weights |
-| Controlled | GPU, locked SM clock (set 2400 MHz, observed 2377-2392), power limit (500 W), `gpu_memory_utilization` 0.85, `max_model_len` 12288, attention backend, DeepGEMM off, `ignore_eos`, greedy decoding, prompt set, probe set, evaluator |
-| Dependent | output-token and request throughput; TTFT/TPOT/E2E at p50/p90/p99; energy; task accuracy; held-out perplexity; per-dimension curve existence and strength |
+|                       |                                                                   |
+|---                    |---                                                                |
+| Independent variable  | quantization scheme: BF16 / FP8-native / AWQ-4bit                 |
+| Model                 | Qwen3-8B, three official checkpoints from the same base weights   |
+| Controlled            | GPU, locked SM clock (set 2400 MHz, observed 2377-2392),<br>power limit (500 W), `gpu_memory_utilization` 0.85,<br>`max_model_len` 12288,<br>attention backend,<br>DeepGEMM off, `ignore_eos`,<br>greedy decoding,<br>prompt set,<br>probe set, evaluator                                              |
+| Dependent             | output-token and request throughput; TTFT/TPOT/E2E at p50/p90/p99;<br>energy;<br>task accuracy;<br>held-out perplexity;<br>per-dimension curve existence and strength                        |
 
 The full-precision arm is **bfloat16**, the checkpoint's native dtype. Forcing
 float16 on a bf16-trained model would degrade the reference point every other
@@ -139,11 +139,11 @@ All results stamped with this fingerprint and a clean git commit.
 Output-token throughput (tok/s), 200 requests per level, 512-in/256-out,
 `ignore_eos` forcing exactly 256 decoded tokens per request in every arm:
 
-| scheme | c=1 | c=4 | c=16 | c=64 |
-|---|---|---|---|---|
-| BF16 | 90.8 | 323.1 | 1032.6 | 2199.9 |
-| FP8-native | 125.9 | 474.0 | 1497.8 | **3175.5** |
-| AWQ-4bit | **202.1** | **709.2** | **1821.6** | 2638.8 |
+| scheme      |     c=1   |     c=4   |    c=16     |    c=64     |
+|-------------|-----------|-----------|-------------|-------------|
+| BF16        | 90.8      | 323.1     | 1032.6      | 2199.9      |
+| FP8-native  | 125.9     |  474.0    | 1497.8      | **3175.5**  |
+| AWQ-4bit    | **202.1** | **709.2** | **1821.6**  | 2638.8      |    
 
 **The ordering inverts.** AWQ leads by 2.2× at concurrency 1 and still leads at
 16, but FP8 overtakes it at 64 by 20.3%. At low concurrency the workload is
@@ -152,11 +152,11 @@ turns compute-bound, and native FP8 tensor cores beat dequantize-then-compute.
 
 Latency and energy at the extremes:
 
-| scheme | TTFT p50 (c=1) | TTFT p99 (c=64) | TPOT p50 (c=64) | tok/J (c=64) |
-|---|---|---|---|---|
-| BF16 | 50.5 ms | 2420 ms | 23.76 ms | 5.52 |
-| FP8-native | **34.2 ms** | **1501 ms** | **16.85 ms** | **8.16** |
-| AWQ-4bit | 49.7 ms | 2490 ms | 21.00 ms | 7.12 |
+| scheme      | TTFT p50 (c=1)  | TTFT p99 (c=64) | TPOT p50 (c=64) | tok/J (c=64) |
+|-------------|-----------------|-----------------|-----------------|--------------|
+| BF16        | 50.5 ms         | 2420 ms         | 23.76 ms        | 5.52         |
+| FP8-native  | **34.2 ms**     | **1501 ms**     | **16.85 ms**    | **8.16**     |
+| AWQ-4bit    | 49.7 ms         | 2490 ms         | 21.00 ms        | 7.12         |
 
 FP8 takes best time-to-first-token at every level, best tail latency under load
 by a wide margin (1.5 s vs ~2.4–2.5 s at p99), and best energy efficiency.
@@ -167,10 +167,10 @@ Held-out perplexity over 198 private, unpublished passages (82,282 scored
 tokens), compared **paired per passage** — every arm scores the identical token
 sequence, so passage difficulty cancels:
 
-| comparison | perplexity | ratio | 95% CI | verdict |
-|---|---|---|---|---|
+| comparison  | perplexity      | ratio  | 95% CI           | verdict                       |
+|-------------|-----------------|--------|------------------|-------------------------------|
 | FP8 vs BF16 | 36.451 → 36.490 | 1.0011 | [0.9997, 1.0024] | not distinguishable from zero |
-| AWQ vs BF16 | 36.451 → 38.642 | 1.0601 | [1.0548, 1.0657] | **significant** |
+| AWQ vs BF16 | 36.451 → 38.642 | 1.0601 | [1.0548, 1.0657] | **significant**               |
 
 Pairing is what makes this resolvable. On the same data the unpaired interval is
 [−0.0667, +0.1833] nats/token — it spans zero and would report *no detectable
@@ -191,11 +191,11 @@ This is the section the study was built for, and it does not deliver a finding.
 
 Curve verdicts, within-probe permutation test:
 
-| dimension | BF16 | FP8-native | AWQ-4bit |
-|---|---|---|---|
-| factual_recall | 0.112 (p=0.130) | 0.067 (p=0.595) | 0.141 (p=0.034) |
-| instruction_following | **0.085 (p=0.0002)** | **0.063 (p=0.010)** | **0.069 (p=0.004)** |
-| salience | 0.097 (p=0.231) | 0.048 (p=0.834) | 0.061 (p=0.682) |
+| dimension             | BF16                  | FP8-native          | AWQ-4bit            |
+|-----------------------|-----------------------|---------------------|---------------------|
+| factual_recall        | 0.112 (p=0.130)       | 0.067 (p=0.595)     | 0.141 (p=0.034)     |
+| instruction_following | **0.085 (p=0.0002)**  | **0.063 (p=0.010)** | **0.069 (p=0.004)** |
+| salience              | 0.097 (p=0.231)       | 0.048 (p=0.834)     | 0.061 (p=0.682)     |
 
 **Only instruction_following has a curve at BF16.** Per the pre-registered
 outcome, a dimension with no curve at full precision is a property of the model
@@ -205,21 +205,21 @@ rather than reported as a collapse. That removes factual_recall and salience.
 The curve that does exist is a clean **lost-in-the-middle U**, reproduced in all
 three arms — mean score by position, instruction_following:
 
-| position | 0.02 | 0.20 | 0.50 | 0.80 | 0.98 |
-|---|---|---|---|---|---|
-| BF16 | 0.860 | 0.725 | 0.710 | 0.796 | 0.815 |
-| FP8 | 0.807 | 0.783 | 0.774 | 0.792 | 0.813 |
-| AWQ | 0.807 | 0.697 | 0.727 | 0.732 | 0.779 |
+| position  | 0.02  | 0.20  | 0.50  | 0.80  | 0.98  |
+|-----------|-------|-------|-------|-------|-------|
+| BF16      | 0.860 | 0.725 | 0.710 | 0.796 | 0.815 |
+| FP8       | 0.807 | 0.783 | 0.774 | 0.792 | 0.813 |
+| AWQ       | 0.807 | 0.697 | 0.727 | 0.732 | 0.779 |
 
 Curve strength appears to fall from 0.085 to 0.063 under FP8. **It is not
 distinguishable from noise.** Bootstrapping over probes — the independent unit —
 gives heavily overlapping intervals:
 
-| dimension | BF16 | FP8 | AWQ |
-|---|---|---|---|
-| factual_recall | [0.080, 0.396] | [0.054, 0.302] | [0.080, 0.445] |
+| dimension             | BF16           | FP8            | AWQ            |
+|-----------------------|----------------|----------------|----------------|
+| factual_recall        | [0.080, 0.396] | [0.054, 0.302] | [0.080, 0.445] |
 | instruction_following | [0.048, 0.195] | [0.041, 0.152] | [0.045, 0.171] |
-| salience | [0.080, 0.308] | [0.035, 0.295] | [0.061, 0.301] |
+| salience              | [0.080, 0.308] | [0.035, 0.295] | [0.061, 0.301] |
 
 The `factual_recall` cell that clears threshold under AWQ (p=0.034) should not be
 read as a finding: nine tests were run without correction, ~0.45 false positives

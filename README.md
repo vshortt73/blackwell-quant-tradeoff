@@ -74,7 +74,9 @@ VLLM_ATTENTION_BACKEND=FLASH_ATTN VLLM_USE_DEEP_GEMM=0 \
     --gpu-memory-utilization 0.85 --max-model-len 8192 \
     --port 8000 --served-model-name model-under-test
 
-# 4. run the harness against that scheme (repeat per scheme)
+# 4. run the harness against that scheme (repeat per scheme).
+#    env/run_sweep.sh does steps 3-6 for all three arms unattended; it is the
+#    exact script that produced the committed results.
 .venv/bin/python harness/run_serving_bench.py configs/fp8_native.yaml
 .venv/bin/python harness/run_quality_eval.py  configs/fp8_native.yaml
 
@@ -107,12 +109,16 @@ env/          pinned Dockerfile, requirements.lock, gpu_setup.sh (clock lock)
 configs/      one YAML per scheme; controlled vars identical across all
 harness/      serving bench, quality anchors, APEX importer, grader, fingerprinting
 results/raw/  immutable per-run JSON (committed); analysis.py builds plots/tables
-writeup/      the differentiated study skeleton
+results/apex/ raw APEX databases + sweep logs (gitignored; regenerable)
+writeup/      the study writeup
 METHODOLOGY.md  pre-registration
 LANDMINES.md    sm_120 serving field log
 ```
 
-## What you must wire before running
+## Prerequisites for a run
+
+All of these are satisfied in the committed sweep; they are documented because
+getting any of them wrong silently corrupts the result rather than failing loudly.
 
 1. **An APEX run (pass 1) configured for all three dimensions.** The importer
    is built (`harness/run_apex_eval.py`); pass 1 needs two things:
@@ -232,10 +238,32 @@ Done (kept here as a record of what was verified rather than assumed):
    negation guard. Deterministic by design so grader variance cannot
    contaminate the BF16→FP8→AWQ delta. Tests: `harness/test_grader.py`.
 
-## Sequence (per the plan)
+## Status and next steps
 
-1. Baseline the harness on the **4080 Super (sm_89)** — fully supported, removes
-   "is it my config or the hardware?" ambiguity.
-2. Port to the **5090**, log every sm_120 landmine in `LANDMINES.md`.
-3. Run the three-scheme tradeoff study; write it up.
-4. *(optional)* TensorRT-LLM cross-check as a second, smaller artifact.
+**Done.** The three-scheme sweep ran on the 5090 under locked clocks; serving,
+latency, energy and paired perplexity results are final and written up in
+[`writeup/tradeoff_study.md`](writeup/tradeoff_study.md). Every sm_120 landmine
+encountered is recorded in [`LANDMINES.md`](LANDMINES.md), including two that
+would have silently corrupted results (DeepGEMM aborting FP8 weight loading, and
+Qwen3 reasoning tokens reaching APEX's scorers).
+
+**Inconclusive.** The per-capability claim — the reason this study exists — was
+not answered. Only `instruction_following` has a positional curve at BF16, and
+bootstrapped curve-strength intervals overlap across all three schemes. H1 is
+untested, not rejected. Section 4.3 of the writeup gives the numbers; the cause
+is probe-set calibration, diagnosed by `harness/check_probes.py`.
+
+**Next, in payoff order.**
+
+1. Author replacements for the 32 degenerate probes (14 factual at ceiling, 14
+   salience at floor) using the 28 survivors as templates. This is what narrows
+   the intervals that made the headline inconclusive.
+2. Scale `data/tasks.jsonl` to 300–1000 items so McNemar has discordant pairs.
+3. Extend to 16k–32k context, where prior APEX history shows positional effects
+   are strongest.
+4. Repeat on a ~30B model where all three dimensions sit in range — necessarily
+   a two-arm (FP8 vs AWQ) comparison, since a 30B BF16 arm does not fit 32 GiB.
+5. *(optional)* Cross-family (Gemma, Llama); TensorRT-LLM cross-check.
+
+The 4080 Super (sm_89) baseline in the original plan was skipped: the sm_120
+stack worked without it, so it would have cost time without removing ambiguity.
