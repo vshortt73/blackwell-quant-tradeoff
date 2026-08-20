@@ -2,6 +2,9 @@
 
 **Per-capability quantization degradation on NVIDIA Blackwell (RTX 5090, sm_120).**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22020049.svg)](https://doi.org/10.5281/zenodo.22020049)
+
+
 As quantization drops BF16 → FP8-native → AWQ-4bit, throughput rises. This study
 measures whether model quality degrades *uniformly* across capabilities or
 *differentially* — using [APEX](https://github.com/vshortt73/apex)'s three
