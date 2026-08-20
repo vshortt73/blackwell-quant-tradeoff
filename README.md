@@ -12,11 +12,13 @@ The finding a serving team actually needs is not "quality dropped X%." It's
 *which* capability drops, and at *what* precision. That per-capability profile is
 what nothing in the vLLM-benchmark literature currently reports.
 
-> **Status:** methodology and harness complete; harness verified end-to-end
-> against a live vLLM 0.27.1 server on the 5090 (AWQ arm). Study results pending
-> runs. No numbers in this repo are fabricated — `results/raw/` fills only when
-> you run the harness. Headline figure regenerates from raw via
-> `results/analysis.py`.
+> **Status:** first complete three-arm sweep done; see
+> [`writeup/tradeoff_study.md`](writeup/tradeoff_study.md). Serving and
+> perplexity results are final. The per-capability (APEX) result is
+> **inconclusive** — only one of three dimensions has a positional curve at
+> BF16, and curve-strength intervals overlap across schemes. Every number here
+> comes from `results/raw/`, each stamped with a full environment fingerprint
+> and its originating commit.
 >
 > **Model under test:** Qwen3-8B (dense 8B), three official checkpoints —
 > BF16 / FP8 (e4m3) / AWQ-4bit. Sized so all three arms fit one 32 GiB card with
@@ -24,8 +26,19 @@ what nothing in the vLLM-benchmark literature currently reports.
 
 ## Headline
 
-_(populated after runs — throughput gain vs per-dimension retention; where the
-three dimension curves separate is the result.)_
+**FP8-native buys 44% more throughput at concurrency 64 for no measurable
+quality cost.** AWQ-4bit is 2.2x faster than BF16 single-stream but FP8
+overtakes it under load, and AWQ costs 6.0% perplexity.
+
+| output tok/s | c=1 | c=4 | c=16 | c=64 | perplexity vs BF16 |
+|---|---|---|---|---|---|
+| BF16 | 90.8 | 323.1 | 1032.6 | 2199.9 | — |
+| FP8-native | 125.9 | 474.0 | 1497.8 | **3175.5** | 1.0011 [0.9997, 1.0024] n.s. |
+| AWQ-4bit | **202.1** | **709.2** | **1821.6** | 2638.8 | 1.0601 [1.0548, 1.0657] **sig.** |
+
+The ordering **inverts** with concurrency: 4-bit wins while weight-bound, native
+FP8 wins once compute-bound. A benchmark reporting one throughput number would
+name a different winner depending on which regime it sampled.
 
 ![headline](plots/headline_tradeoff.png)
 
